@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router";
 import { History } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { PageHeader } from "@/components/shared/page-header";
 import { EmptyState } from "@/components/shared/empty-state";
 import { SearchInput } from "@/components/shared/search-input";
@@ -15,6 +16,7 @@ import { formatRelativeTime } from "@/lib/format";
 import type { SessionInfo } from "@/types/session";
 
 export function SessionsPage() {
+  const { t } = useTranslation();
   const { key: detailKey } = useParams<{ key: string }>();
   const navigate = useNavigate();
   const { sessions, total, loading, refresh, preview, deleteSession, resetSession } = useSessions();
@@ -55,13 +57,13 @@ export function SessionsPage() {
 
   return (
     <div className="p-6">
-      <PageHeader title="Sessions" description="Browse conversation sessions" />
+      <PageHeader title={t("sessions.title")} description={t("sessions.description")} />
 
       <div className="mt-4">
         <SearchInput
           value={search}
           onChange={setSearch}
-          placeholder="Search sessions..."
+          placeholder={t("sessions.searchPlaceholder")}
           className="max-w-sm"
         />
       </div>
@@ -72,11 +74,11 @@ export function SessionsPage() {
         ) : filtered.length === 0 ? (
           <EmptyState
             icon={History}
-            title={search ? "No matching sessions" : "No sessions yet"}
+            title={search ? t("sessions.noMatching") : t("sessions.noSessionsYet")}
             description={
               search
-                ? "Try a different search term."
-                : "Sessions will appear here once you start chatting."
+                ? t("common.tryDifferentSearch")
+                : t("sessions.sessionsAppear")
             }
           />
         ) : (
@@ -84,11 +86,11 @@ export function SessionsPage() {
             <table className="w-full">
               <thead>
                 <tr className="border-b bg-muted/50">
-                  <th className="px-4 py-3 text-left text-sm font-medium">Session</th>
-                  <th className="px-4 py-3 text-left text-sm font-medium">Agent</th>
-                  <th className="px-4 py-3 text-left text-sm font-medium">Channel</th>
-                  <th className="px-4 py-3 text-right text-sm font-medium">Messages</th>
-                  <th className="px-4 py-3 text-right text-sm font-medium">Updated</th>
+                  <th className="px-4 py-3 text-left text-sm font-medium">{t("sessions.tableSession")}</th>
+                  <th className="px-4 py-3 text-left text-sm font-medium">{t("sessions.tableAgent")}</th>
+                  <th className="px-4 py-3 text-left text-sm font-medium">{t("sessions.tableChannel")}</th>
+                  <th className="px-4 py-3 text-right text-sm font-medium">{t("sessions.tableMessages")}</th>
+                  <th className="px-4 py-3 text-right text-sm font-medium">{t("sessions.tableUpdated")}</th>
                 </tr>
               </thead>
               <tbody>

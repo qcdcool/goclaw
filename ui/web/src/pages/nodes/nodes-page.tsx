@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link as LinkIcon, RefreshCw, Check, Trash2 } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { PageHeader } from "@/components/shared/page-header";
@@ -16,6 +17,7 @@ import { useMinLoading } from "@/hooks/use-min-loading";
 import { useDeferredLoading } from "@/hooks/use-deferred-loading";
 
 export function NodesPage() {
+  const { t } = useTranslation();
   const { pendingPairings, pairedDevices, loading, refresh, approvePairing, revokePairing } = useNodes();
   const spinning = useMinLoading(loading);
   const isEmpty = pendingPairings.length === 0 && pairedDevices.length === 0;
@@ -26,11 +28,11 @@ export function NodesPage() {
   return (
     <div className="p-6">
       <PageHeader
-        title="Nodes"
-        description="Manage paired devices and pending pairing requests"
+        title={t("nodes.title")}
+        description={t("nodes.description")}
         actions={
           <Button variant="outline" size="sm" onClick={refresh} disabled={spinning} className="gap-1">
-            <RefreshCw className={"h-3.5 w-3.5" + (spinning ? " animate-spin" : "")} /> Refresh
+            <RefreshCw className={"h-3.5 w-3.5" + (spinning ? " animate-spin" : "")} /> {t("common.refresh")}
           </Button>
         }
       />
@@ -41,16 +43,15 @@ export function NodesPage() {
         ) : isEmpty ? (
           <EmptyState
             icon={LinkIcon}
-            title="No devices"
-            description="No paired devices or pending pairing requests."
+            title={t("nodes.noDevices")}
+            description={t("nodes.noDevicesDesc")}
           />
         ) : (
           <div className="space-y-6">
-            {/* Pending pairings */}
             {pendingPairings.length > 0 && (
               <div>
                 <h3 className="mb-3 text-sm font-medium">
-                  Pending Requests ({pendingPairings.length})
+                  {t("nodes.pendingRequests", { count: pendingPairings.length })}
                 </h3>
                 <div className="space-y-2">
                   {pendingPairings.map((p: PendingPairing) => (
@@ -61,7 +62,7 @@ export function NodesPage() {
                           <span className="font-mono text-sm font-medium">{p.code}</span>
                         </div>
                         <div className="mt-1 text-xs text-muted-foreground">
-                          Sender: {p.sender_id}
+                          {t("nodes.sender")}: {p.sender_id}
                           {p.chat_id && ` | Chat: ${p.chat_id}`}
                           {" | "}
                           {formatRelativeTime(new Date(p.created_at))}
@@ -72,7 +73,7 @@ export function NodesPage() {
                         onClick={() => setApproveTarget(p)}
                         className="gap-1"
                       >
-                        <Check className="h-3.5 w-3.5" /> Approve
+                        <Check className="h-3.5 w-3.5" /> {t("nodes.approve")}
                       </Button>
                     </div>
                   ))}
@@ -80,21 +81,20 @@ export function NodesPage() {
               </div>
             )}
 
-            {/* Paired devices */}
             {pairedDevices.length > 0 && (
               <div>
                 <h3 className="mb-3 text-sm font-medium">
-                  Paired Devices ({pairedDevices.length})
+                  {t("nodes.pairedDevices", { count: pairedDevices.length })}
                 </h3>
                 <div className="rounded-md border">
                   <table className="w-full text-sm">
                     <thead>
                       <tr className="border-b bg-muted/50">
-                        <th className="px-4 py-3 text-left font-medium">Channel</th>
-                        <th className="px-4 py-3 text-left font-medium">Sender ID</th>
-                        <th className="px-4 py-3 text-left font-medium">Paired</th>
-                        <th className="px-4 py-3 text-left font-medium">By</th>
-                        <th className="px-4 py-3 text-right font-medium">Actions</th>
+                        <th className="px-4 py-3 text-left font-medium">{t("nodes.tableChannel")}</th>
+                        <th className="px-4 py-3 text-left font-medium">{t("nodes.tableSenderId")}</th>
+                        <th className="px-4 py-3 text-left font-medium">{t("nodes.tablePaired")}</th>
+                        <th className="px-4 py-3 text-left font-medium">{t("nodes.tableBy")}</th>
+                        <th className="px-4 py-3 text-right font-medium">{t("nodes.tableActions")}</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -115,7 +115,7 @@ export function NodesPage() {
                               onClick={() => setRevokeTarget(d)}
                               className="gap-1"
                             >
-                              <Trash2 className="h-3.5 w-3.5" /> Revoke
+                              <Trash2 className="h-3.5 w-3.5" /> {t("nodes.revoke")}
                             </Button>
                           </td>
                         </tr>
@@ -133,9 +133,13 @@ export function NodesPage() {
         <ConfirmDialog
           open
           onOpenChange={() => setApproveTarget(null)}
-          title="Approve Pairing"
-          description={`Approve pairing request from ${approveTarget.channel}:${approveTarget.sender_id} (code: ${approveTarget.code})? This device will be able to interact with agents.`}
-          confirmLabel="Approve"
+          title={t("nodes.approvePairing")}
+          description={t("nodes.approveConfirm", {
+            channel: approveTarget.channel,
+            senderId: approveTarget.sender_id,
+            code: approveTarget.code,
+          })}
+          confirmLabel={t("nodes.approve")}
           onConfirm={async () => {
             await approvePairing(approveTarget.code);
             setApproveTarget(null);
@@ -147,9 +151,12 @@ export function NodesPage() {
         <ConfirmDialog
           open
           onOpenChange={() => setRevokeTarget(null)}
-          title="Revoke Device"
-          description={`Revoke pairing for ${revokeTarget.channel}:${revokeTarget.sender_id}? The device will need to re-pair.`}
-          confirmLabel="Revoke"
+          title={t("nodes.revokeDevice")}
+          description={t("nodes.revokeConfirm", {
+            channel: revokeTarget.channel,
+            senderId: revokeTarget.sender_id,
+          })}
+          confirmLabel={t("nodes.revoke")}
           variant="destructive"
           onConfirm={async () => {
             await revokePairing(revokeTarget.sender_id, revokeTarget.channel);

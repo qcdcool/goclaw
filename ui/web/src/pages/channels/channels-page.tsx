@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Radio, Plus, RefreshCw, Pencil, Trash2 } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { PageHeader } from "@/components/shared/page-header";
@@ -18,6 +19,7 @@ import { useDeferredLoading } from "@/hooks/use-deferred-loading";
 import { usePagination } from "@/hooks/use-pagination";
 
 export function ChannelsPage() {
+  const { t } = useTranslation();
   const { channels, loading: statusLoading, refresh: refreshStatus } = useChannels();
   const {
     instances, loading: instancesLoading, supported,
@@ -40,7 +42,6 @@ export function ChannelsPage() {
     if (supported) refreshInstances();
   };
 
-  // Standalone mode: show status-only cards
   if (!supported) {
     return <ChannelsStatusView channels={channels} loading={statusLoading} spinning={spinning} refresh={refreshStatus} />;
   }
@@ -88,15 +89,15 @@ export function ChannelsPage() {
   return (
     <div className="p-6">
       <PageHeader
-        title="Channels"
-        description="Manage channel instances"
+        title={t("channels.title")}
+        description={t("channels.description")}
         actions={
           <div className="flex gap-2">
             <Button size="sm" onClick={() => { setEditInstance(null); setFormOpen(true); }} className="gap-1">
-              <Plus className="h-3.5 w-3.5" /> Add Channel
+              <Plus className="h-3.5 w-3.5" /> {t("channels.addChannel")}
             </Button>
             <Button variant="outline" size="sm" onClick={refresh} disabled={spinning} className="gap-1">
-              <RefreshCw className={"h-3.5 w-3.5" + (spinning ? " animate-spin" : "")} /> Refresh
+              <RefreshCw className={"h-3.5 w-3.5" + (spinning ? " animate-spin" : "")} /> {t("common.refresh")}
             </Button>
           </div>
         }
@@ -106,7 +107,7 @@ export function ChannelsPage() {
         <SearchInput
           value={search}
           onChange={setSearch}
-          placeholder="Search channels..."
+          placeholder={t("channels.searchPlaceholder")}
           className="max-w-sm"
         />
       </div>
@@ -117,20 +118,20 @@ export function ChannelsPage() {
         ) : filtered.length === 0 ? (
           <EmptyState
             icon={Radio}
-            title={search ? "No matching channels" : "No channels"}
-            description={search ? "Try a different search term." : "Add your first channel instance to get started."}
+            title={search ? t("channels.noMatching") : t("channels.noChannels")}
+            description={search ? t("common.tryDifferentSearch") : t("channels.addFirst")}
           />
         ) : (
           <div className="rounded-md border">
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b bg-muted/50">
-                  <th className="px-4 py-3 text-left font-medium">Name</th>
-                  <th className="px-4 py-3 text-left font-medium">Type</th>
-                  <th className="px-4 py-3 text-left font-medium">Agent</th>
-                  <th className="px-4 py-3 text-left font-medium">Status</th>
-                  <th className="px-4 py-3 text-left font-medium">Enabled</th>
-                  <th className="px-4 py-3 text-right font-medium">Actions</th>
+                  <th className="px-4 py-3 text-left font-medium">{t("channels.tableName")}</th>
+                  <th className="px-4 py-3 text-left font-medium">{t("channels.tableType")}</th>
+                  <th className="px-4 py-3 text-left font-medium">{t("channels.tableAgent")}</th>
+                  <th className="px-4 py-3 text-left font-medium">{t("channels.tableStatus")}</th>
+                  <th className="px-4 py-3 text-left font-medium">{t("channels.tableEnabled")}</th>
+                  <th className="px-4 py-3 text-right font-medium">{t("channels.tableActions")}</th>
                 </tr>
               </thead>
               <tbody>
@@ -164,7 +165,7 @@ export function ChannelsPage() {
                               className={`h-2 w-2 rounded-full ${status.running ? "bg-green-500" : "bg-muted-foreground"}`}
                             />
                             <span className="text-muted-foreground">
-                              {status.running ? "Running" : "Stopped"}
+                              {status.running ? t("common.running") : t("common.stopped")}
                             </span>
                           </div>
                         ) : (
@@ -173,7 +174,7 @@ export function ChannelsPage() {
                       </td>
                       <td className="px-4 py-3">
                         <Badge variant={inst.enabled ? "default" : "secondary"}>
-                          {inst.enabled ? "Enabled" : "Disabled"}
+                          {inst.enabled ? t("common.enabled") : t("common.disabled")}
                         </Badge>
                       </td>
                       <td className="px-4 py-3 text-right">
@@ -225,9 +226,9 @@ export function ChannelsPage() {
       <ConfirmDialog
         open={!!deleteTarget}
         onOpenChange={(v) => !v && setDeleteTarget(null)}
-        title="Delete Channel Instance"
-        description={`Are you sure you want to delete "${deleteTarget?.display_name || deleteTarget?.name}"?`}
-        confirmLabel="Delete"
+        title={t("channels.deleteChannel")}
+        description={t("channels.deleteConfirm", { name: deleteTarget?.display_name || deleteTarget?.name })}
+        confirmLabel={t("common.delete")}
         variant="destructive"
         onConfirm={handleDelete}
         loading={deleteLoading}

@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Package, RefreshCw, Settings, Info } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
@@ -47,6 +48,7 @@ function getConfigHint(tool: BuiltinToolData): string | undefined {
 }
 
 export function BuiltinToolsPage() {
+  const { t } = useTranslation();
   const { tools, loading, refresh, updateTool } = useBuiltinTools();
   const spinning = useMinLoading(loading);
   const showSkeleton = useDeferredLoading(loading && tools.length === 0);
@@ -54,10 +56,10 @@ export function BuiltinToolsPage() {
   const [settingsTool, setSettingsTool] = useState<BuiltinToolData | null>(null);
 
   const filtered = tools.filter(
-    (t) =>
-      t.name.toLowerCase().includes(search.toLowerCase()) ||
-      t.display_name.toLowerCase().includes(search.toLowerCase()) ||
-      t.description.toLowerCase().includes(search.toLowerCase()),
+    (tool) =>
+      tool.name.toLowerCase().includes(search.toLowerCase()) ||
+      tool.display_name.toLowerCase().includes(search.toLowerCase()) ||
+      tool.description.toLowerCase().includes(search.toLowerCase()),
   );
 
   const grouped = new Map<string, BuiltinToolData[]>();
@@ -81,8 +83,8 @@ export function BuiltinToolsPage() {
   return (
     <div className="p-6">
       <PageHeader
-        title="Built-in Tools"
-        description="Manage system built-in tools. Enable/disable or configure settings globally."
+        title={t("builtinTools.title")}
+        description={t("builtinTools.description")}
         actions={
           <Button
             variant="outline"
@@ -92,7 +94,7 @@ export function BuiltinToolsPage() {
             className="gap-1"
           >
             <RefreshCw className={"h-3.5 w-3.5" + (spinning ? " animate-spin" : "")} />
-            Refresh
+            {t("common.refresh")}
           </Button>
         }
       />
@@ -101,12 +103,14 @@ export function BuiltinToolsPage() {
         <SearchInput
           value={search}
           onChange={setSearch}
-          placeholder="Search tools..."
+          placeholder={t("builtinTools.searchPlaceholder")}
           className="max-w-sm"
         />
         <span className="text-xs text-muted-foreground">
-          {filtered.length} tool{filtered.length !== 1 ? "s" : ""}
-          {sortedCategories.length > 0 && ` · ${sortedCategories.length} categories`}
+          {filtered.length === 1
+            ? t("builtinTools.toolCount", { count: filtered.length })
+            : t("builtinTools.toolsCount", { count: filtered.length })}
+          {sortedCategories.length > 0 && ` · ${t("builtinTools.categories", { count: sortedCategories.length })}`}
         </span>
       </div>
 
@@ -116,9 +120,9 @@ export function BuiltinToolsPage() {
         ) : filtered.length === 0 ? (
           <EmptyState
             icon={Package}
-            title={search ? "No matching tools" : "No built-in tools"}
+            title={search ? t("builtinTools.noMatching") : t("builtinTools.noBuiltinTools")}
             description={
-              search ? "Try a different search term." : "No built-in tools have been seeded yet."
+              search ? t("common.tryDifferentSearch") : t("builtinTools.notSeeded")
             }
           />
         ) : (
@@ -183,6 +187,7 @@ function ToolRow({
   onToggle: (tool: BuiltinToolData) => void;
   onSettings: (tool: BuiltinToolData) => void;
 }) {
+  const { t } = useTranslation();
   const configHint = getConfigHint(tool);
   const editable = hasEditableSettings(tool);
 
@@ -201,7 +206,7 @@ function ToolRow({
                   </Badge>
                 </TooltipTrigger>
                 <TooltipContent side="top">
-                  <p className="text-xs">Requires: {tool.requires.join(", ")}</p>
+                  <p className="text-xs">{t("builtinTools.requires", { list: tool.requires.join(", ") })}</p>
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
@@ -223,7 +228,7 @@ function ToolRow({
             className="h-7 gap-1 px-2 text-xs"
           >
             <Settings className="h-3 w-3" />
-            Settings
+            {t("builtinTools.settings")}
           </Button>
         )}
         {!editable && configHint && (
@@ -236,7 +241,7 @@ function ToolRow({
                 </span>
               </TooltipTrigger>
               <TooltipContent side="top">
-                <p className="text-xs">Configured via the Config page</p>
+                <p className="text-xs">{t("builtinTools.configuredVia")}</p>
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>

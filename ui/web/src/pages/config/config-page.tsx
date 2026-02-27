@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Settings, Save, RefreshCw, AlertCircle, ShieldAlert, ArrowRight } from "lucide-react";
 import { Link } from "react-router";
+import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -25,6 +26,7 @@ import { TelemetrySection } from "./sections/telemetry-section";
 import { BindingsSection } from "./sections/bindings-section";
 
 export function ConfigPage() {
+  const { t } = useTranslation();
   const { config, hash, configPath, loading, saving, error, refresh, applyRaw, patch } = useConfig();
   const spinning = useMinLoading(loading);
   const showSkeleton = useDeferredLoading(loading && !config);
@@ -47,14 +49,14 @@ export function ConfigPage() {
       await applyRaw(rawText);
       setDirty(false);
     } catch (err) {
-      setSaveError(err instanceof Error ? err.message : "Failed to save");
+      setSaveError(err instanceof Error ? err.message : t("config.failedToSave"));
     }
   };
 
   if (showSkeleton) {
     return (
       <div className="p-6">
-        <PageHeader title="Config" description="Gateway configuration" />
+        <PageHeader title={t("config.title")} description={t("config.description")} />
         <div className="mt-6">
           <DetailSkeleton />
         </div>
@@ -65,15 +67,15 @@ export function ConfigPage() {
   if (!config) {
     return (
       <div className="p-6">
-        <PageHeader title="Config" description="Gateway configuration" />
+        <PageHeader title={t("config.title")} description={t("config.description")} />
         <div className="mt-6">
           <EmptyState
             icon={Settings}
-            title="No configuration"
-            description="Could not load gateway configuration."
+            title={t("config.noConfig")}
+            description={t("config.couldNotLoad")}
             action={
               <Button variant="outline" size="sm" onClick={refresh}>
-                Retry
+                {t("common.retry")}
               </Button>
             }
           />
@@ -85,8 +87,8 @@ export function ConfigPage() {
   return (
     <div className="p-6">
       <PageHeader
-        title="Config"
-        description="Gateway configuration"
+        title={t("config.title")}
+        description={t("config.description")}
         actions={
           <div className="flex items-center gap-2">
             {configPath && (
@@ -98,7 +100,7 @@ export function ConfigPage() {
               </Badge>
             )}
             <Button variant="outline" size="sm" onClick={refresh} disabled={spinning} className="gap-1">
-              <RefreshCw className={"h-3.5 w-3.5" + (spinning ? " animate-spin" : "")} /> Refresh
+              <RefreshCw className={"h-3.5 w-3.5" + (spinning ? " animate-spin" : "")} /> {t("common.refresh")}
             </Button>
           </div>
         }
@@ -116,8 +118,8 @@ export function ConfigPage() {
 
       <Tabs defaultValue="ui" className="mt-4">
         <TabsList>
-          <TabsTrigger value="ui">UI</TabsTrigger>
-          <TabsTrigger value="raw">Raw Editor</TabsTrigger>
+          <TabsTrigger value="ui">{t("config.ui")}</TabsTrigger>
+          <TabsTrigger value="raw">{t("config.rawEditor")}</TabsTrigger>
         </TabsList>
 
         <TabsContent value="ui" className="mt-4">
@@ -133,7 +135,7 @@ export function ConfigPage() {
                 setDirty(true);
               }}
               className="min-h-[500px] font-mono text-sm"
-              placeholder="JSON configuration..."
+              placeholder={t("config.jsonPlaceholder")}
             />
 
             {(saveError || error) && (
@@ -150,10 +152,10 @@ export function ConfigPage() {
                 className="gap-1"
               >
                 <Save className="h-3.5 w-3.5" />
-                {saving ? "Saving..." : "Save"}
+                {saving ? t("common.saving") : t("common.save")}
               </Button>
               {dirty && (
-                <span className="text-xs text-muted-foreground">Unsaved changes</span>
+                <span className="text-xs text-muted-foreground">{t("common.unsavedChanges")}</span>
               )}
             </div>
           </div>
@@ -163,8 +165,8 @@ export function ConfigPage() {
   );
 }
 
-/** Compact redirect card shown in managed mode for sections that have dedicated pages. */
 function ManagedRedirect({ title, description, to }: { title: string; description: string; to: string }) {
+  const { t } = useTranslation();
   return (
     <Card>
       <CardHeader className="pb-3">
@@ -175,7 +177,7 @@ function ManagedRedirect({ title, description, to }: { title: string; descriptio
           </div>
           <Button variant="outline" size="sm" className="gap-1.5 shrink-0" asChild>
             <Link to={to}>
-              Manage <ArrowRight className="h-3.5 w-3.5" />
+              {t("common.manage")} <ArrowRight className="h-3.5 w-3.5" />
             </Link>
           </Button>
         </div>
@@ -194,6 +196,7 @@ function ConfigUI({
   onPatch: (updates: Record<string, unknown>) => Promise<void>;
   saving: boolean;
 }) {
+  const { t } = useTranslation();
   const isManaged = (config.database as any)?.mode === "managed";
 
   return (
@@ -205,8 +208,8 @@ function ConfigUI({
       />
       {isManaged ? (
         <ManagedRedirect
-          title="LLM Providers"
-          description="Managed via the Providers page in managed mode."
+          title={t("config.llmProviders")}
+          description={t("config.managedViaProviders")}
           to={ROUTES.PROVIDERS}
         />
       ) : (
@@ -228,8 +231,8 @@ function ConfigUI({
       />
       {isManaged ? (
         <ManagedRedirect
-          title="Channels"
-          description="Managed via the Channels page in managed mode."
+          title={t("config.channelsTitle")}
+          description={t("config.managedViaChannels")}
           to={ROUTES.CHANNELS}
         />
       ) : (

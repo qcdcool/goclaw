@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Clock, Plus, Play, Trash2, History, RefreshCw } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
@@ -29,6 +30,7 @@ function formatSchedule(job: CronJob): string {
 }
 
 export function CronPage() {
+  const { t } = useTranslation();
   const { jobs, loading, refresh, createJob, toggleJob, deleteJob, runJob, getRunLog } = useCron();
   const spinning = useMinLoading(loading);
   const showSkeleton = useDeferredLoading(loading && jobs.length === 0);
@@ -55,15 +57,15 @@ export function CronPage() {
   return (
     <div className="p-6">
       <PageHeader
-        title="Cron"
-        description="Schedule recurring agent tasks"
+        title={t("cron.title")}
+        description={t("cron.description")}
         actions={
           <div className="flex gap-2">
             <Button variant="outline" size="sm" onClick={refresh} disabled={spinning} className="gap-1">
-              <RefreshCw className={"h-3.5 w-3.5" + (spinning ? " animate-spin" : "")} /> Refresh
+              <RefreshCw className={"h-3.5 w-3.5" + (spinning ? " animate-spin" : "")} /> {t("common.refresh")}
             </Button>
             <Button size="sm" onClick={() => setShowCreate(true)} className="gap-1">
-              <Plus className="h-3.5 w-3.5" /> New Job
+              <Plus className="h-3.5 w-3.5" /> {t("cron.newJob")}
             </Button>
           </div>
         }
@@ -75,11 +77,11 @@ export function CronPage() {
         ) : jobs.length === 0 ? (
           <EmptyState
             icon={Clock}
-            title="No cron jobs"
-            description="Create a cron job to schedule recurring agent tasks."
+            title={t("cron.noCronJobs")}
+            description={t("cron.createCronJob")}
             action={
               <Button size="sm" onClick={() => setShowCreate(true)} className="gap-1">
-                <Plus className="h-3.5 w-3.5" /> New Job
+                <Plus className="h-3.5 w-3.5" /> {t("cron.newJob")}
               </Button>
             }
           />
@@ -88,12 +90,12 @@ export function CronPage() {
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b bg-muted/50">
-                  <th className="px-4 py-3 text-left font-medium">Enabled</th>
-                  <th className="px-4 py-3 text-left font-medium">Name</th>
-                  <th className="px-4 py-3 text-left font-medium">Schedule</th>
-                  <th className="px-4 py-3 text-left font-medium">Message</th>
-                  <th className="px-4 py-3 text-left font-medium">Agent</th>
-                  <th className="px-4 py-3 text-right font-medium">Actions</th>
+                  <th className="px-4 py-3 text-left font-medium">{t("cron.tableEnabled")}</th>
+                  <th className="px-4 py-3 text-left font-medium">{t("cron.tableName")}</th>
+                  <th className="px-4 py-3 text-left font-medium">{t("cron.tableSchedule")}</th>
+                  <th className="px-4 py-3 text-left font-medium">{t("cron.tableMessage")}</th>
+                  <th className="px-4 py-3 text-left font-medium">{t("cron.tableAgent")}</th>
+                  <th className="px-4 py-3 text-right font-medium">{t("cron.tableActions")}</th>
                 </tr>
               </thead>
               <tbody>
@@ -116,7 +118,7 @@ export function CronPage() {
                       {job.agentId ? (
                         <Badge variant="secondary">{job.agentId}</Badge>
                       ) : (
-                        <span className="text-muted-foreground">default</span>
+                        <span className="text-muted-foreground">{t("common.default")}</span>
                       )}
                     </td>
                     <td className="px-4 py-3">
@@ -124,7 +126,7 @@ export function CronPage() {
                         <Button
                           variant="ghost"
                           size="icon"
-                          title="Run now"
+                          title={t("cron.runNow")}
                           onClick={() => runJob(job.id)}
                         >
                           <Play className="h-3.5 w-3.5" />
@@ -132,7 +134,7 @@ export function CronPage() {
                         <Button
                           variant="ghost"
                           size="icon"
-                          title="Run history"
+                          title={t("cron.runHistory")}
                           onClick={() => handleShowRunLog(job)}
                         >
                           <History className="h-3.5 w-3.5" />
@@ -140,7 +142,7 @@ export function CronPage() {
                         <Button
                           variant="ghost"
                           size="icon"
-                          title="Delete"
+                          title={t("common.delete")}
                           onClick={() => setDeleteTarget(job)}
                         >
                           <Trash2 className="h-3.5 w-3.5" />
@@ -173,13 +175,13 @@ export function CronPage() {
         <ConfirmDialog
           open
           onOpenChange={() => setToggleTarget(null)}
-          title={toggleTarget.enabled ? "Enable Cron Job" : "Disable Cron Job"}
+          title={toggleTarget.enabled ? t("cron.enableCronJob") : t("cron.disableCronJob")}
           description={
             toggleTarget.enabled
-              ? `Enable "${toggleTarget.job.name}"? It will start running on schedule.`
-              : `Disable "${toggleTarget.job.name}"? It will stop running until re-enabled.`
+              ? t("cron.enableConfirm", { name: toggleTarget.job.name })
+              : t("cron.disableConfirm", { name: toggleTarget.job.name })
           }
-          confirmLabel={toggleTarget.enabled ? "Enable" : "Disable"}
+          confirmLabel={toggleTarget.enabled ? t("cron.enable") : t("cron.disable")}
           variant={toggleTarget.enabled ? "default" : "destructive"}
           onConfirm={async () => {
             await toggleJob(toggleTarget.job.id, toggleTarget.enabled);
@@ -192,9 +194,9 @@ export function CronPage() {
         <ConfirmDialog
           open
           onOpenChange={() => setDeleteTarget(null)}
-          title="Delete Cron Job"
-          description={`Delete "${deleteTarget.name}"? This cannot be undone.`}
-          confirmLabel="Delete"
+          title={t("cron.deleteCronJob")}
+          description={t("cron.deleteConfirm", { name: deleteTarget.name })}
+          confirmLabel={t("common.delete")}
           variant="destructive"
           onConfirm={async () => {
             await deleteJob(deleteTarget.id);

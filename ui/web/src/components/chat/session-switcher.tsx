@@ -1,4 +1,5 @@
 import { MessageSquare } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { formatRelativeTime } from "@/lib/format";
 import { parseSessionKey } from "@/lib/session-key";
 import type { SessionInfo } from "@/types/session";
@@ -16,6 +17,8 @@ export function SessionSwitcher({
   onSelect,
   loading,
 }: SessionSwitcherProps) {
+  const { t } = useTranslation();
+
   if (sessions.length === 0 && loading) {
     return (
       <div className="space-y-2 p-2">
@@ -29,7 +32,7 @@ export function SessionSwitcher({
   if (sessions.length === 0) {
     return (
       <div className="px-4 py-8 text-center text-sm text-muted-foreground">
-        No sessions yet. Start a chat!
+        {t("chat.noSessions")}
       </div>
     );
   }
@@ -56,7 +59,7 @@ export function SessionSwitcher({
             <div className="min-w-0 flex-1">
               <div className="truncate font-medium">{label}</div>
               <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                <span>{session.messageCount} messages</span>
+                <span>{session.messageCount} {t("common.messages")}</span>
                 <span>{formatRelativeTime(session.updated)}</span>
               </div>
             </div>

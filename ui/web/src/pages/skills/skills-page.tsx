@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Zap, Eye, RefreshCw, Upload, Trash2 } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { PageHeader } from "@/components/shared/page-header";
@@ -16,6 +17,7 @@ import { useDeferredLoading } from "@/hooks/use-deferred-loading";
 import { usePagination } from "@/hooks/use-pagination";
 
 export function SkillsPage() {
+  const { t } = useTranslation();
   const { skills, loading, refresh, getSkill, uploadSkill, deleteSkill } = useSkills();
   const spinning = useMinLoading(loading);
   const showSkeleton = useDeferredLoading(loading && skills.length === 0);
@@ -66,15 +68,15 @@ export function SkillsPage() {
   return (
     <div className="p-6">
       <PageHeader
-        title="Skills"
-        description="Manage agent skills and capabilities"
+        title={t("skills.title")}
+        description={t("skills.description")}
         actions={
           <div className="flex gap-2">
             <Button variant="outline" size="sm" onClick={() => setUploadOpen(true)} className="gap-1">
-              <Upload className="h-3.5 w-3.5" /> Upload
+              <Upload className="h-3.5 w-3.5" /> {t("common.upload")}
             </Button>
             <Button variant="outline" size="sm" onClick={refresh} disabled={spinning} className="gap-1">
-              <RefreshCw className={"h-3.5 w-3.5" + (spinning ? " animate-spin" : "")} /> Refresh
+              <RefreshCw className={"h-3.5 w-3.5" + (spinning ? " animate-spin" : "")} /> {t("common.refresh")}
             </Button>
           </div>
         }
@@ -84,7 +86,7 @@ export function SkillsPage() {
         <SearchInput
           value={search}
           onChange={setSearch}
-          placeholder="Search skills..."
+          placeholder={t("skills.searchPlaceholder")}
           className="max-w-sm"
         />
       </div>
@@ -95,18 +97,18 @@ export function SkillsPage() {
         ) : filtered.length === 0 ? (
           <EmptyState
             icon={Zap}
-            title={search ? "No matching skills" : "No skills"}
-            description={search ? "Try a different search term." : "No skills have been registered yet."}
+            title={search ? t("skills.noMatching") : t("skills.noSkills")}
+            description={search ? t("common.tryDifferentSearch") : t("skills.noSkillsRegistered")}
           />
         ) : (
           <div className="rounded-md border">
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b bg-muted/50">
-                  <th className="px-4 py-3 text-left font-medium">Name</th>
-                  <th className="px-4 py-3 text-left font-medium">Description</th>
-                  <th className="px-4 py-3 text-left font-medium">Source</th>
-                  <th className="px-4 py-3 text-right font-medium">Actions</th>
+                  <th className="px-4 py-3 text-left font-medium">{t("skills.tableName")}</th>
+                  <th className="px-4 py-3 text-left font-medium">{t("skills.tableDescription")}</th>
+                  <th className="px-4 py-3 text-left font-medium">{t("skills.tableSource")}</th>
+                  <th className="px-4 py-3 text-right font-medium">{t("skills.tableActions")}</th>
                 </tr>
               </thead>
               <tbody>
@@ -119,7 +121,7 @@ export function SkillsPage() {
                       </div>
                     </td>
                     <td className="px-4 py-3 text-muted-foreground">
-                      {skill.description || "No description"}
+                      {skill.description || t("common.noDescription")}
                     </td>
                     <td className="px-4 py-3">
                       <Badge variant="outline">{skill.source || "file"}</Badge>
@@ -133,7 +135,7 @@ export function SkillsPage() {
                           disabled={detailLoading}
                           className="gap-1"
                         >
-                          <Eye className="h-3.5 w-3.5" /> View
+                          <Eye className="h-3.5 w-3.5" /> {t("common.view")}
                         </Button>
                         {skill.id && (
                           <Button
@@ -179,9 +181,9 @@ export function SkillsPage() {
       <ConfirmDialog
         open={!!deleteTarget}
         onOpenChange={(open) => !open && setDeleteTarget(null)}
-        title="Delete Skill"
-        description={`Are you sure you want to delete "${deleteTarget?.name}"? This action cannot be undone.`}
-        confirmLabel="Delete"
+        title={t("skills.deleteSkill")}
+        description={t("skills.deleteConfirm", { name: deleteTarget?.name })}
+        confirmLabel={t("common.delete")}
         variant="destructive"
         onConfirm={handleDelete}
         loading={deleteLoading}

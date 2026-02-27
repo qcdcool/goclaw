@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { Activity, RefreshCw, Search } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
@@ -18,6 +19,7 @@ import { useDeferredLoading } from "@/hooks/use-deferred-loading";
 import type { AgentEventPayload } from "@/types/chat";
 
 export function TracesPage() {
+  const { t } = useTranslation();
   const { traces, total, loading, load, getTrace } = useTraces();
   const spinning = useMinLoading(loading);
   const showSkeleton = useDeferredLoading(loading && traces.length === 0);
@@ -28,7 +30,6 @@ export function TracesPage() {
 
   const totalPages = Math.max(1, Math.ceil(total / pageSize));
 
-  // Ref to capture current filter for debounced callback
   const agentFilterRef = useRef(agentFilter);
   agentFilterRef.current = agentFilter;
   const pageRef = useRef(page);
@@ -48,7 +49,6 @@ export function TracesPage() {
     });
   };
 
-  // Auto-refresh when any agent run starts/completes (traces are created synchronously at run start)
   const debouncedRefresh = useDebouncedCallback(() => {
     load({
       agentId: agentFilterRef.current || undefined,
@@ -82,11 +82,11 @@ export function TracesPage() {
   return (
     <div className="p-6">
       <PageHeader
-        title="Traces"
-        description="LLM call traces and performance data"
+        title={t("traces.title")}
+        description={t("traces.description")}
         actions={
           <Button variant="outline" size="sm" onClick={handleRefresh} disabled={spinning} className="gap-1">
-            <RefreshCw className={"h-3.5 w-3.5" + (spinning ? " animate-spin" : "")} /> Refresh
+            <RefreshCw className={"h-3.5 w-3.5" + (spinning ? " animate-spin" : "")} /> {t("common.refresh")}
           </Button>
         }
       />
@@ -97,12 +97,12 @@ export function TracesPage() {
           <Input
             value={agentFilter}
             onChange={(e) => setAgentFilter(e.target.value)}
-            placeholder="Filter by agent ID..."
+            placeholder={t("traces.filterByAgent")}
             className="pl-9"
           />
         </div>
         <Button type="submit" variant="outline" size="sm">
-          Filter
+          {t("common.filter")}
         </Button>
       </form>
 
@@ -112,20 +112,20 @@ export function TracesPage() {
         ) : traces.length === 0 ? (
           <EmptyState
             icon={Activity}
-            title="No traces"
-            description="No traces found. Traces are recorded when agents process requests."
+            title={t("traces.noTraces")}
+            description={t("traces.noTracesDesc")}
           />
         ) : (
           <div className="rounded-md border">
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b bg-muted/50">
-                  <th className="px-4 py-3 text-left font-medium">Name</th>
-                  <th className="px-4 py-3 text-left font-medium">Status</th>
-                  <th className="px-4 py-3 text-left font-medium">Duration</th>
-                  <th className="px-4 py-3 text-left font-medium">Tokens</th>
-                  <th className="px-4 py-3 text-left font-medium">Spans</th>
-                  <th className="px-4 py-3 text-left font-medium">Time</th>
+                  <th className="px-4 py-3 text-left font-medium">{t("traces.tableName")}</th>
+                  <th className="px-4 py-3 text-left font-medium">{t("traces.tableStatus")}</th>
+                  <th className="px-4 py-3 text-left font-medium">{t("traces.tableDuration")}</th>
+                  <th className="px-4 py-3 text-left font-medium">{t("traces.tableTokens")}</th>
+                  <th className="px-4 py-3 text-left font-medium">{t("traces.tableSpans")}</th>
+                  <th className="px-4 py-3 text-left font-medium">{t("traces.tableTime")}</th>
                 </tr>
               </thead>
               <tbody>
@@ -136,7 +136,7 @@ export function TracesPage() {
                     onClick={() => setSelectedTraceId(trace.id)}
                   >
                     <td className="max-w-[200px] truncate px-4 py-3 font-medium">
-                      {trace.name || "Unnamed"}
+                      {trace.name || t("traces.unnamed")}
                       {trace.channel && (
                         <Badge variant="outline" className="ml-2 text-xs">
                           {trace.channel}
@@ -153,7 +153,7 @@ export function TracesPage() {
                       <div>{formatTokens(trace.total_input_tokens)} / {formatTokens(trace.total_output_tokens)}</div>
                       {(trace.metadata?.total_cache_read_tokens ?? 0) > 0 && (
                         <div className="text-xs text-green-400">
-                          {formatTokens(trace.metadata!.total_cache_read_tokens!)} cached
+                          {formatTokens(trace.metadata!.total_cache_read_tokens!)} {t("common.cached")}
                         </div>
                       )}
                     </td>

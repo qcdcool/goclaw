@@ -1,5 +1,6 @@
 import { useEffect, useState, useCallback } from "react";
 import { Activity, Bot, History, Zap } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { PageHeader } from "@/components/shared/page-header";
 import { StatusBadge } from "@/components/shared/status-badge";
 import { useAuthStore } from "@/stores/use-auth-store";
@@ -49,6 +50,7 @@ function StatCard({
 }
 
 export function OverviewPage() {
+  const { t } = useTranslation();
   const connected = useAuthStore((s) => s.connected);
   const { call: fetchHealth, data: health } = useWsCall<HealthPayload>(Methods.HEALTH);
   const { call: fetchStatus, data: status } = useWsCall<StatusPayload>(Methods.STATUS);
@@ -61,7 +63,6 @@ export function OverviewPage() {
     }
   }, [connected, fetchHealth, fetchStatus]);
 
-  // Re-fetch on health events
   const handleHealth = useCallback(() => {
     setLastUpdate(Date.now());
     fetchHealth();
@@ -72,12 +73,12 @@ export function OverviewPage() {
   return (
     <div className="space-y-6 p-6">
       <PageHeader
-        title="Overview"
-        description="Gateway status and health"
+        title={t("overview.title")}
+        description={t("overview.description")}
         actions={
           <StatusBadge
             status={connected ? "success" : "error"}
-            label={connected ? "Connected" : "Disconnected"}
+            label={connected ? t("common.connected") : t("common.disconnected")}
           />
         }
       />
@@ -85,22 +86,22 @@ export function OverviewPage() {
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <StatCard
           icon={Activity}
-          label="Status"
-          value={health?.status ?? "unknown"}
+          label={t("overview.status")}
+          value={health?.status ?? t("common.unknown")}
         />
         <StatCard
           icon={Bot}
-          label="Agents"
+          label={t("overview.agents")}
           value={status?.agents?.length ?? 0}
         />
         <StatCard
           icon={History}
-          label="Sessions"
+          label={t("overview.sessions")}
           value={status?.sessions ?? 0}
         />
         <StatCard
           icon={Zap}
-          label="Connected Clients"
+          label={t("overview.connectedClients")}
           value={status?.clients ?? 0}
         />
       </div>

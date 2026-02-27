@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { ArrowRightLeft, RefreshCw, Search } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
@@ -26,6 +27,7 @@ import type { AgentEventPayload } from "@/types/chat";
 import type { DelegationHistoryRecord } from "@/types/delegation";
 
 export function DelegationsPage() {
+  const { t } = useTranslation();
   const { delegations, total, loading, load, getDelegation } = useDelegations();
   const spinning = useMinLoading(loading);
   const showSkeleton = useDeferredLoading(loading && delegations.length === 0);
@@ -87,11 +89,11 @@ export function DelegationsPage() {
   return (
     <div className="p-6">
       <PageHeader
-        title="Delegations"
-        description="Agent delegation history and results"
+        title={t("delegations.title")}
+        description={t("delegations.description")}
         actions={
           <Button variant="outline" size="sm" onClick={handleRefresh} disabled={spinning} className="gap-1">
-            <RefreshCw className={"h-3.5 w-3.5" + (spinning ? " animate-spin" : "")} /> Refresh
+            <RefreshCw className={"h-3.5 w-3.5" + (spinning ? " animate-spin" : "")} /> {t("common.refresh")}
           </Button>
         }
       />
@@ -102,7 +104,7 @@ export function DelegationsPage() {
           <Input
             value={sourceFilter}
             onChange={(e) => setSourceFilter(e.target.value)}
-            placeholder="Source agent..."
+            placeholder={t("delegations.sourceAgent")}
             className="pl-9"
           />
         </div>
@@ -111,25 +113,25 @@ export function DelegationsPage() {
           <Input
             value={targetFilter}
             onChange={(e) => setTargetFilter(e.target.value)}
-            placeholder="Target agent..."
+            placeholder={t("delegations.targetAgent")}
             className="pl-9"
           />
         </div>
         <Select value={statusFilter} onValueChange={setStatusFilter}>
           <SelectTrigger className="w-[140px]">
-            <SelectValue placeholder="Status" />
+            <SelectValue placeholder={t("traces.tableStatus")} />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">All</SelectItem>
-            <SelectItem value="pending">Pending</SelectItem>
-            <SelectItem value="running">Running</SelectItem>
-            <SelectItem value="completed">Completed</SelectItem>
-            <SelectItem value="failed">Failed</SelectItem>
-            <SelectItem value="cancelled">Cancelled</SelectItem>
+            <SelectItem value="all">{t("delegations.statusAll")}</SelectItem>
+            <SelectItem value="pending">{t("common.pending")}</SelectItem>
+            <SelectItem value="running">{t("common.running")}</SelectItem>
+            <SelectItem value="completed">{t("common.completed")}</SelectItem>
+            <SelectItem value="failed">{t("common.failed")}</SelectItem>
+            <SelectItem value="cancelled">{t("common.cancelled")}</SelectItem>
           </SelectContent>
         </Select>
         <Button type="submit" variant="outline" size="sm">
-          Filter
+          {t("common.filter")}
         </Button>
       </form>
 
@@ -139,20 +141,20 @@ export function DelegationsPage() {
         ) : delegations.length === 0 ? (
           <EmptyState
             icon={ArrowRightLeft}
-            title="No delegations"
-            description="No delegation records found. Delegations are recorded when agents delegate tasks to other agents."
+            title={t("delegations.noDelegations")}
+            description={t("delegations.noDelegationsDesc")}
           />
         ) : (
           <div className="rounded-md border">
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b bg-muted/50">
-                  <th className="px-4 py-3 text-left font-medium">Source / Target</th>
-                  <th className="px-4 py-3 text-left font-medium">Task</th>
-                  <th className="px-4 py-3 text-left font-medium">Status</th>
-                  <th className="px-4 py-3 text-left font-medium">Mode</th>
-                  <th className="px-4 py-3 text-left font-medium">Duration</th>
-                  <th className="px-4 py-3 text-left font-medium">Time</th>
+                  <th className="px-4 py-3 text-left font-medium">{t("delegations.tableSourceTarget")}</th>
+                  <th className="px-4 py-3 text-left font-medium">{t("delegations.tableTask")}</th>
+                  <th className="px-4 py-3 text-left font-medium">{t("delegations.tableStatus")}</th>
+                  <th className="px-4 py-3 text-left font-medium">{t("delegations.tableMode")}</th>
+                  <th className="px-4 py-3 text-left font-medium">{t("delegations.tableDuration")}</th>
+                  <th className="px-4 py-3 text-left font-medium">{t("delegations.tableTime")}</th>
                 </tr>
               </thead>
               <tbody>

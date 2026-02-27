@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router";
 import { Plus, Bot } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { PageHeader } from "@/components/shared/page-header";
 import { EmptyState } from "@/components/shared/empty-state";
 import { SearchInput } from "@/components/shared/search-input";
@@ -18,6 +19,7 @@ import { SummoningModal } from "./summoning-modal";
 import { usePagination } from "@/hooks/use-pagination";
 
 export function AgentsPage() {
+  const { t } = useTranslation();
   const { id: detailId } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const http = useHttp();
@@ -38,7 +40,6 @@ export function AgentsPage() {
     }
   };
 
-  // Show detail view if route has :id
   if (detailId) {
     return (
       <AgentDetailPage
@@ -63,11 +64,11 @@ export function AgentsPage() {
   return (
     <div className="p-6">
       <PageHeader
-        title="Agents"
-        description="Manage your AI agents"
+        title={t("agents.title")}
+        description={t("agents.description")}
         actions={
           <Button onClick={() => setCreateOpen(true)} className="gap-1">
-            <Plus className="h-4 w-4" /> Create Agent
+            <Plus className="h-4 w-4" /> {t("agents.createAgent")}
           </Button>
         }
       />
@@ -76,7 +77,7 @@ export function AgentsPage() {
         <SearchInput
           value={search}
           onChange={setSearch}
-          placeholder="Search agents..."
+          placeholder={t("agents.searchPlaceholder")}
           className="max-w-sm"
         />
       </div>
@@ -91,11 +92,11 @@ export function AgentsPage() {
         ) : filtered.length === 0 ? (
           <EmptyState
             icon={Bot}
-            title={search ? "No matching agents" : "No agents yet"}
+            title={search ? t("agents.noMatching") : t("agents.noAgentsYet")}
             description={
               search
-                ? "Try a different search term."
-                : "Create your first agent to get started."
+                ? t("common.tryDifferentSearch")
+                : t("agents.createFirst")
             }
           />
         ) : (
@@ -139,7 +140,6 @@ export function AgentsPage() {
         onCreate={async (data) => {
           const created = await createAgent(data);
           refresh();
-          // Auto-show summoning modal if agent is being summoned
           if (created && typeof created === "object" && "status" in created && created.status === "summoning") {
             const ag = created as { id: string; display_name?: string; agent_key: string };
             setSummoningAgent({ id: ag.id, name: ag.display_name || ag.agent_key });
@@ -150,9 +150,9 @@ export function AgentsPage() {
       <ConfirmDialog
         open={!!deleteTarget}
         onOpenChange={() => setDeleteTarget(null)}
-        title="Delete Agent"
-        description="Are you sure you want to delete this agent? This action cannot be undone."
-        confirmLabel="Delete"
+        title={t("agents.deleteAgent")}
+        description={t("agents.deleteConfirm")}
+        confirmLabel={t("common.delete")}
         variant="destructive"
         onConfirm={async () => {
           if (deleteTarget) {

@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { MessageBubble } from "@/components/chat/message-bubble";
 import { StreamingText } from "@/components/chat/streaming-text";
 import { ToolCallCard } from "@/components/chat/tool-call-card";
@@ -20,11 +21,11 @@ export function ChatThread({
   isRunning,
   loading,
 }: ChatThreadProps) {
+  const { t } = useTranslation();
   const { ref, onScroll } = useAutoScroll<HTMLDivElement>(
     [messages.length, streamText, toolStream.length],
   );
 
-  // Show spinner while loading history for a different session
   if (loading) {
     return (
       <div className="flex flex-1 items-center justify-center">
@@ -36,8 +37,8 @@ export function ChatThread({
   if (messages.length === 0 && !isRunning) {
     return (
       <div className="flex flex-1 flex-col items-center justify-center gap-2 text-muted-foreground">
-        <p className="text-lg font-medium">Start a conversation</p>
-        <p className="text-sm">Send a message to begin chatting with the agent.</p>
+        <p className="text-lg font-medium">{t("chat.startConversation")}</p>
+        <p className="text-sm">{t("chat.sendMessageToBegin")}</p>
       </div>
     );
   }
@@ -53,7 +54,6 @@ export function ChatThread({
           <MessageBubble key={`${msg.role}-${i}`} message={msg} />
         ))}
 
-        {/* Tool stream during active run */}
         {toolStream.length > 0 && (
           <div className="space-y-1">
             {toolStream.map((entry) => (
@@ -62,7 +62,6 @@ export function ChatThread({
           </div>
         )}
 
-        {/* Streaming text */}
         {isRunning && streamText !== null && (
           <div className="flex gap-3">
             <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border bg-background">
@@ -76,7 +75,6 @@ export function ChatThread({
           </div>
         )}
 
-        {/* Thinking indicator when running but no stream yet */}
         {isRunning && streamText === null && toolStream.length === 0 && (
           <div className="flex gap-3">
             <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border bg-background">
