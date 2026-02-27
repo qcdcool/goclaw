@@ -80,7 +80,9 @@
     "pendingPairing": "{{count}} 个待处理配对请求",
     "pairingRequests": "配对请求",
     "english": "English",
-    "chinese": "中文"
+    "chinese": "中文",
+    "pendingPairing": "{{count}} 个待处理配对请求",
+    "pairingRequests": "配对请求"
   },
   "login": {
     "subtitle": "登录网关控制面板",

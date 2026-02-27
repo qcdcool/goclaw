@@ -80,7 +80,9 @@
     "pendingPairing": "{{count}} pending pairing request(s)",
     "pairingRequests": "Pairing requests",
     "english": "English",
-    "chinese": "中文"
+    "chinese": "中文",
+    "pendingPairing": "{{count}} pending pairing request(s)",
+    "pairingRequests": "Pairing requests"
   },
   "login": {
     "subtitle": "Sign in to the gateway dashboard",
