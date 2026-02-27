@@ -1,7 +1,9 @@
+import { useTranslation } from "react-i18next";
 import { useAuthStore } from "@/stores/use-auth-store";
 import { cn } from "@/lib/utils";
 
 export function ConnectionStatus() {
+  const { t } = useTranslation();
   const connected = useAuthStore((s) => s.connected);
 
   return (
@@ -12,7 +14,7 @@ export function ConnectionStatus() {
           connected ? "bg-green-500" : "bg-red-500",
         )}
       />
-      <span>{connected ? "Connected" : "Disconnected"}</span>
+      <span>{connected ? t("common.connected") : t("common.disconnected")}</span>
     </div>
   );
 }

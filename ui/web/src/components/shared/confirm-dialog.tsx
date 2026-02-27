@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import {
   Dialog,
   DialogContent,
@@ -24,11 +25,13 @@ export function ConfirmDialog({
   onOpenChange,
   title,
   description,
-  confirmLabel = "Confirm",
+  confirmLabel,
   variant = "default",
   onConfirm,
   loading,
 }: ConfirmDialogProps) {
+  const { t } = useTranslation();
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent>
@@ -38,10 +41,10 @@ export function ConfirmDialog({
         </DialogHeader>
         <DialogFooter>
           <Button variant="outline" onClick={() => onOpenChange(false)} disabled={loading}>
-            Cancel
+            {t("common.cancel")}
           </Button>
           <Button variant={variant} onClick={onConfirm} disabled={loading}>
-            {loading ? "..." : confirmLabel}
+            {loading ? "..." : confirmLabel || t("common.confirm")}
           </Button>
         </DialogFooter>
       </DialogContent>
