@@ -1,5 +1,5 @@
 import { useEffect, useCallback } from "react";
-import { Activity, Bot, Hash, Radio, AlertTriangle } from "lucide-react";
+import { Activity, Bot, Hash, Radio, AlertTriangle, History, Zap } from "lucide-react";
 import { Link } from "react-router";
 import { useTranslation } from "react-i18next";
 import { PageHeader } from "@/components/shared/page-header";
@@ -174,6 +174,16 @@ export function OverviewPage() {
               : "0"
           }
           sub={channelEntries.length > 0 ? t("overview.online") : undefined}
+        />
+        <StatCard
+          icon={History}
+          label={t("overview.sessions")}
+          value={status?.sessions ?? 0}
+        />
+        <StatCard
+          icon={Zap}
+          label={t("overview.connectedClients")}
+          value={status?.clients ?? 0}
         />
       </div>
 
