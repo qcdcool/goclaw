@@ -21,19 +21,23 @@ var sensitiveKeys = []string{
 	"credential", "authorization", "cookie",
 }
 
-// LogTee is a slog.Handler that forwards log records to subscribed WS clients
-// while delegating to an underlying handler for normal output.
-type LogTee struct {
-	inner slog.Handler
-
+// logTeeState is shared by a LogTee and any handlers created via WithAttrs/WithGroup
+// so that clients and ring buffer are protected by a single set of mutexes.
+type logTeeState struct {
 	mu      sync.RWMutex
 	clients map[string]*logSubscriber
 
-	// Ring buffer of recent entries for replay on subscribe.
 	ringMu  sync.RWMutex
 	ring    []map[string]interface{}
 	ringPos int
 	ringFul bool
+}
+
+// LogTee is a slog.Handler that forwards log records to subscribed WS clients
+// while delegating to an underlying handler for normal output.
+type LogTee struct {
+	inner slog.Handler
+	state *logTeeState
 }
 
 // logSubscriber tracks a client and its requested minimum log level.
@@ -46,9 +50,11 @@ type logSubscriber struct {
 // to any WebSocket clients that have started log tailing.
 func NewLogTee(inner slog.Handler) *LogTee {
 	return &LogTee{
-		inner:   inner,
-		clients: make(map[string]*logSubscriber),
-		ring:    make([]map[string]interface{}, ringBufferSize),
+		inner: inner,
+		state: &logTeeState{
+			clients: make(map[string]*logSubscriber),
+			ring:    make([]map[string]interface{}, ringBufferSize),
+		},
 	}
 }
 
@@ -58,9 +64,9 @@ func (t *LogTee) Enabled(ctx context.Context, level slog.Level) bool {
 		return true
 	}
 	// Also accept if any subscriber wants this level (e.g. debug).
-	t.mu.RLock()
-	defer t.mu.RUnlock()
-	for _, sub := range t.clients {
+	t.state.mu.RLock()
+	defer t.state.mu.RUnlock()
+	for _, sub := range t.state.clients {
 		if level >= sub.level {
 			return true
 		}
@@ -69,36 +75,37 @@ func (t *LogTee) Enabled(ctx context.Context, level slog.Level) bool {
 }
 
 func (t *LogTee) Handle(ctx context.Context, r slog.Record) error {
+	s := t.state
 	// Build entry for WS clients.
-	t.mu.RLock()
-	n := len(t.clients)
-	t.mu.RUnlock()
+	s.mu.RLock()
+	n := len(s.clients)
+	s.mu.RUnlock()
 
 	needEntry := n > 0 // need to broadcast
 	// Always build entry for ring buffer regardless of subscribers.
 	entry := t.buildEntry(r)
 
 	// Store in ring buffer.
-	t.ringMu.Lock()
-	t.ring[t.ringPos] = entry
-	t.ringPos = (t.ringPos + 1) % ringBufferSize
-	if t.ringPos == 0 {
-		t.ringFul = true
+	s.ringMu.Lock()
+	s.ring[s.ringPos] = entry
+	s.ringPos = (s.ringPos + 1) % ringBufferSize
+	if s.ringPos == 0 {
+		s.ringFul = true
 	}
-	t.ringMu.Unlock()
+	s.ringMu.Unlock()
 
 	// Forward to subscribers.
 	if needEntry {
 		evt := protocol.NewEvent("log", entry)
 		level := r.Level
 
-		t.mu.RLock()
-		for _, sub := range t.clients {
+		s.mu.RLock()
+		for _, sub := range s.clients {
 			if level >= sub.level {
 				sub.client.SendEvent(*evt)
 			}
 		}
-		t.mu.RUnlock()
+		s.mu.RUnlock()
 	}
 
 	// Forward to inner handler only if it accepts this level.
@@ -145,49 +152,48 @@ func (t *LogTee) buildEntry(r slog.Record) map[string]interface{} {
 
 func (t *LogTee) WithAttrs(attrs []slog.Attr) slog.Handler {
 	return &LogTee{
-		inner:   t.inner.WithAttrs(attrs),
-		clients: t.clients,
-		ring:    t.ring,
+		inner: t.inner.WithAttrs(attrs),
+		state: t.state,
 	}
 }
 
 func (t *LogTee) WithGroup(name string) slog.Handler {
 	return &LogTee{
-		inner:   t.inner.WithGroup(name),
-		clients: t.clients,
-		ring:    t.ring,
+		inner: t.inner.WithGroup(name),
+		state: t.state,
 	}
 }
 
 // Subscribe adds a client to the log tailing set at the given level.
 // Pass slog.LevelInfo for default, slog.LevelDebug for verbose.
 func (t *LogTee) Subscribe(client *Client, level slog.Level) {
-	t.mu.Lock()
-	t.clients[client.ID()] = &logSubscriber{client: client, level: level}
-	t.mu.Unlock()
+	s := t.state
+	s.mu.Lock()
+	s.clients[client.ID()] = &logSubscriber{client: client, level: level}
+	s.mu.Unlock()
 
 	// Replay ring buffer entries at the requested level.
-	t.ringMu.RLock()
+	s.ringMu.RLock()
 	var entries []map[string]interface{}
-	if t.ringFul {
+	if s.ringFul {
 		// Buffer is full — read from ringPos (oldest) to ringPos-1 (newest).
 		for i := 0; i < ringBufferSize; i++ {
-			idx := (t.ringPos + i) % ringBufferSize
-			e := t.ring[idx]
+			idx := (s.ringPos + i) % ringBufferSize
+			e := s.ring[idx]
 			if e != nil && logLevelValue(e["level"]) >= level {
 				entries = append(entries, e)
 			}
 		}
 	} else {
 		// Buffer not full — read from 0 to ringPos-1.
-		for i := 0; i < t.ringPos; i++ {
-			e := t.ring[i]
+		for i := 0; i < s.ringPos; i++ {
+			e := s.ring[i]
 			if e != nil && logLevelValue(e["level"]) >= level {
 				entries = append(entries, e)
 			}
 		}
 	}
-	t.ringMu.RUnlock()
+	s.ringMu.RUnlock()
 
 	for _, e := range entries {
 		client.SendEvent(*protocol.NewEvent("log", e))
@@ -204,9 +210,9 @@ func (t *LogTee) Subscribe(client *Client, level slog.Level) {
 
 // Unsubscribe removes a client from the log tailing set.
 func (t *LogTee) Unsubscribe(clientID string) {
-	t.mu.Lock()
-	delete(t.clients, clientID)
-	t.mu.Unlock()
+	t.state.mu.Lock()
+	delete(t.state.clients, clientID)
+	t.state.mu.Unlock()
 }
 
 func levelName(l slog.Level) string {

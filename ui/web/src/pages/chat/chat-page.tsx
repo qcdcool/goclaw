@@ -129,7 +129,6 @@ export function ChatPage() {
 
   return (
     <div className="relative flex h-full">
-      {/* Chat Sidebar */}
       {isMobile ? (
         <>
           {chatSidebarOpen && (

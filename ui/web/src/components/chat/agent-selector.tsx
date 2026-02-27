@@ -39,7 +39,6 @@ export function AgentSelector({ value, onChange }: AgentSelectorProps) {
       >
         <Bot className="h-4 w-4 shrink-0 text-muted-foreground" />
         <span className="flex-1 truncate text-left">
-          {selected?.display_name ?? selected?.agent_key ?? (value || "Select agent")}
           {selected?.display_name ?? selected?.agent_key ?? (value || t("chat.selectAgent"))}
         </span>
         <ChevronDown className="h-4 w-4 shrink-0 text-muted-foreground" />

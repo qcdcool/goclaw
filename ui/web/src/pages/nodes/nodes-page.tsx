@@ -69,21 +69,21 @@ export function NodesPage() {
                           {formatRelativeTime(new Date(p.created_at))}
                         </div>
                       </div>
-                      <div className="flex gap-2">
+<div className="flex gap-2">
                         <Button
                           variant="ghost"
                           size="sm"
                           onClick={() => setDenyTarget(p)}
                           className="gap-1"
                         >
-                          <X className="h-3.5 w-3.5" /> Deny
+                          <X className="h-3.5 w-3.5" /> {t("approvals.deny")}
                         </Button>
                         <Button
                           size="sm"
                           onClick={() => setApproveTarget(p)}
                           className="gap-1"
                         >
-                          <Check className="h-3.5 w-3.5" /> Approve
+                          <Check className="h-3.5 w-3.5" /> {t("nodes.approve")}
                         </Button>
                       </div>
                     </div>

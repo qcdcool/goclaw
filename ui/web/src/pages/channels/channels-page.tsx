@@ -22,6 +22,7 @@ import { useDeferredLoading } from "@/hooks/use-deferred-loading";
 import { useDebouncedCallback } from "@/hooks/use-debounced-callback";
 
 export function ChannelsPage() {
+  const { t } = useTranslation();
   const { id: detailId } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { t } = useTranslation();
@@ -285,8 +286,6 @@ export function ChannelsPage() {
             instanceName={qrTarget.display_name || qrTarget.name}
             onSuccess={() => {
               setQrTarget(null);
-              // Backend reload is async (~2-3s: stop → sleep → restart).
-              // Refresh after reload has time to complete.
               setTimeout(() => refresh(), 3000);
             }}
           />
