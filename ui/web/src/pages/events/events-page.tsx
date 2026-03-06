@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect, useMemo, useCallback } from "react";
+import { useTranslation } from "react-i18next";
 import { Radar, Trash2, Pause, Play, ArrowDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -10,17 +11,22 @@ import { Methods } from "@/api/protocol";
 import { EventCard } from "./event-sections";
 import type { TeamData } from "@/types/team";
 
-const EVENT_CATEGORIES = [
-  { label: "All", value: "all" },
-  { label: "Delegation", value: "delegation" },
-  { label: "Task", value: "team.task" },
-  { label: "Message", value: "team.message" },
-  { label: "Agent", value: "agent" },
-  { label: "Team CRUD", value: "team.crud" },
-  { label: "Agent Link", value: "agent_link" },
-] as const;
+function useEventCategories() {
+  const { t } = useTranslation();
+  return [
+    { label: t("events.categoryAll"), value: "all" },
+    { label: t("events.categoryDelegation"), value: "delegation" },
+    { label: t("events.categoryTask"), value: "team.task" },
+    { label: t("events.categoryMessage"), value: "team.message" },
+    { label: t("events.categoryAgent"), value: "agent" },
+    { label: t("events.categoryTeamCrud"), value: "team.crud" },
+    { label: t("events.categoryAgentLink"), value: "agent_link" },
+  ] as const;
+}
 
 export function EventsPage() {
+  const { t } = useTranslation();
+  const EVENT_CATEGORIES = useEventCategories();
   const allEvents = useTeamEventStore((s) => s.events);
   const paused = useTeamEventStore((s) => s.paused);
   const setPaused = useTeamEventStore((s) => s.setPaused);
@@ -52,10 +58,10 @@ export function EventsPage() {
 
   const resolveTeam = useCallback(
     (teamId: string | null): string => {
-      if (!teamId) return "Global";
+      if (!teamId) return t("events.global");
       return teamMap.get(teamId) ?? teamId.slice(0, 8);
     },
-    [teamMap],
+    [teamMap, t],
   );
 
   // Unique teams from events for filter dropdown
@@ -141,15 +147,15 @@ export function EventsPage() {
   return (
     <div className="p-4 sm:p-6">
       <PageHeader
-        title="Realtime Events"
-        description="Live WebSocket events across all teams and agents"
+        title={t("events.title")}
+        description={t("events.description")}
         actions={
           <>
             <Badge variant={paused ? "warning" : "success"} className="text-xs">
-              {paused ? "Paused" : "Live"}
+              {paused ? t("events.paused") : t("events.live")}
             </Badge>
             <span className="text-xs text-muted-foreground">
-              {filteredEvents.length} event{filteredEvents.length !== 1 ? "s" : ""}
+              {filteredEvents.length} {filteredEvents.length !== 1 ? t("events.events") : t("events.event")}
             </span>
             <Button
               variant="outline"
@@ -158,7 +164,7 @@ export function EventsPage() {
               className="h-8 gap-1.5"
             >
               {paused ? <Play className="h-3.5 w-3.5" /> : <Pause className="h-3.5 w-3.5" />}
-              {paused ? "Resume" : "Pause"}
+              {paused ? t("events.resume") : t("events.pause")}
             </Button>
             <Button
               variant="outline"
@@ -166,7 +172,7 @@ export function EventsPage() {
               onClick={clear}
               className="h-8 gap-1.5"
             >
-              <Trash2 className="h-3.5 w-3.5" /> Clear
+              <Trash2 className="h-3.5 w-3.5" /> {t("events.clear")}
             </Button>
           </>
         }
@@ -199,7 +205,7 @@ export function EventsPage() {
             onChange={(e) => setTeamFilter(e.target.value)}
             className="h-7 rounded-md border bg-background px-2 text-xs"
           >
-            <option value="all">All teams</option>
+            <option value="all">{t("events.allTeams")}</option>
             {uniqueTeams.map((id) => (
               <option key={id} value={id}>
                 {resolveTeam(id)}
@@ -214,7 +220,7 @@ export function EventsPage() {
           onChange={(e) => setUserFilter(e.target.value)}
           className="h-7 rounded-md border bg-background px-2 text-xs"
         >
-          <option value="all">All users</option>
+          <option value="all">{t("events.allUsers")}</option>
           {uniqueUsers.map((uid) => (
             <option key={uid} value={uid}>
               {uid}
@@ -228,7 +234,7 @@ export function EventsPage() {
           onChange={(e) => setChatFilter(e.target.value)}
           className="h-7 rounded-md border bg-background px-2 text-xs"
         >
-          <option value="all">All chats</option>
+          <option value="all">{t("events.allChats")}</option>
           {uniqueChats.map((cid) => (
             <option key={cid} value={cid}>
               {cid}
@@ -243,11 +249,11 @@ export function EventsPage() {
           <div className="px-4 py-12">
             <EmptyState
               icon={Radar}
-              title="No events yet"
+              title={t("events.noEventsYet")}
               description={
                 paused
-                  ? "Event capture is paused. Resume to see new events."
-                  : "Waiting for real-time events... Events will appear as agents work."
+                  ? t("events.noEventsPaused")
+                  : t("events.noEventsWaiting")
               }
             />
           </div>
@@ -269,7 +275,7 @@ export function EventsPage() {
                 type="button"
                 onClick={scrollToBottom}
                 className="absolute bottom-4 right-4 flex h-8 w-8 items-center justify-center rounded-full border bg-background shadow-md transition-colors hover:bg-muted"
-                title="Scroll to bottom"
+                title={t("events.scrollToBottom")}
               >
                 <ArrowDown className="h-4 w-4" />
               </button>

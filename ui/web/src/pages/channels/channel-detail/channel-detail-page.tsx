@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -20,6 +21,7 @@ interface ChannelDetailPageProps {
 }
 
 export function ChannelDetailPage({ instanceId, onBack }: ChannelDetailPageProps) {
+  const { t } = useTranslation();
   const {
     instance,
     loading,
@@ -37,7 +39,7 @@ export function ChannelDetailPage({ instanceId, onBack }: ChannelDetailPageProps
     return (
       <div className="p-4 sm:p-6">
         <Button variant="ghost" onClick={onBack} className="mb-4 gap-1">
-          <ArrowLeft className="h-4 w-4" /> Back
+          <ArrowLeft className="h-4 w-4" /> {t("channels.back")}
         </Button>
         <DeferredSpinner />
       </div>
@@ -68,11 +70,11 @@ export function ChannelDetailPage({ instanceId, onBack }: ChannelDetailPageProps
               {instance.display_name || instance.name}
             </h2>
             <Badge variant={instance.enabled ? "success" : "secondary"}>
-              {instance.enabled ? "Enabled" : "Disabled"}
+              {instance.enabled ? t("common.enabled") : t("common.disabled")}
             </Badge>
             {status && (
               <Badge variant={status.running ? "success" : "secondary"}>
-                {status.running ? "Running" : "Stopped"}
+                {status.running ? t("common.running") : t("common.stopped")}
               </Badge>
             )}
           </div>
@@ -87,7 +89,7 @@ export function ChannelDetailPage({ instanceId, onBack }: ChannelDetailPageProps
               {channelTypeLabels[instance.channel_type] || instance.channel_type}
             </Badge>
             <span className="text-border">|</span>
-            <span>Agent: {agentName}</span>
+            <span>{t("channels.agent")}: {agentName}</span>
           </div>
         </div>
       </div>
@@ -96,11 +98,11 @@ export function ChannelDetailPage({ instanceId, onBack }: ChannelDetailPageProps
       <div className="max-w-4xl rounded-xl border bg-card p-3 shadow-sm sm:p-4">
         <Tabs value={activeTab} onValueChange={setActiveTab}>
           <TabsList className="w-full justify-start overflow-x-auto overflow-y-hidden">
-            <TabsTrigger value="general">General</TabsTrigger>
-            <TabsTrigger value="credentials">Credentials</TabsTrigger>
-            <TabsTrigger value="config">Config</TabsTrigger>
-            {isTelegram && <TabsTrigger value="groups">Groups</TabsTrigger>}
-            <TabsTrigger value="writers">Writers</TabsTrigger>
+            <TabsTrigger value="general">{t("channels.tabGeneral")}</TabsTrigger>
+            <TabsTrigger value="credentials">{t("channels.tabCredentials")}</TabsTrigger>
+            <TabsTrigger value="config">{t("channels.tabConfig")}</TabsTrigger>
+            {isTelegram && <TabsTrigger value="groups">{t("channels.tabGroups")}</TabsTrigger>}
+            <TabsTrigger value="writers">{t("channels.tabWriters")}</TabsTrigger>
           </TabsList>
 
           <TabsContent value="general" className="mt-4">

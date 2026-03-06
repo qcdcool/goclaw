@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { Save, Plus, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -49,14 +50,16 @@ interface Props {
 function QuotaWindowInputs({
   value,
   onChange,
+  t,
 }: {
   value: QuotaWindow;
   onChange: (v: QuotaWindow) => void;
+  t: (key: string) => string;
 }) {
   return (
     <div className="grid grid-cols-3 gap-3">
       <div className="grid gap-1.5">
-        <InfoLabel tip="Max requests per hour (0 = unlimited)">Hour</InfoLabel>
+        <InfoLabel tip={t("configSections.hourTip")}>{t("overview.hour")}</InfoLabel>
         <Input
           type="number"
           min={0}
@@ -65,7 +68,7 @@ function QuotaWindowInputs({
         />
       </div>
       <div className="grid gap-1.5">
-        <InfoLabel tip="Max requests per day (0 = unlimited)">Day</InfoLabel>
+        <InfoLabel tip={t("configSections.dayTip")}>{t("overview.day")}</InfoLabel>
         <Input
           type="number"
           min={0}
@@ -74,7 +77,7 @@ function QuotaWindowInputs({
         />
       </div>
       <div className="grid gap-1.5">
-        <InfoLabel tip="Max requests per week (0 = unlimited)">Week</InfoLabel>
+        <InfoLabel tip={t("configSections.weekTip")}>{t("overview.week")}</InfoLabel>
         <Input
           type="number"
           min={0}
@@ -93,6 +96,7 @@ function OverridesTable({
   onChange,
   keyPlaceholder,
   options,
+  t,
 }: {
   label: string;
   tip: string;
@@ -100,6 +104,7 @@ function OverridesTable({
   onChange: (v: Record<string, QuotaWindow>) => void;
   keyPlaceholder: string;
   options?: { value: string; label: string }[];
+  t: (key: string) => string;
 }) {
   const keys = Object.keys(entries);
   const usedKeys = new Set(keys);
@@ -138,7 +143,7 @@ function OverridesTable({
           <div className="flex items-end gap-2 min-w-[420px]">
             <div className="grid gap-1.5 min-w-[180px]">
               {i === 0 && (
-                <span className="text-xs text-muted-foreground">Key</span>
+                <span className="text-xs text-muted-foreground">{t("configSections.key")}</span>
               )}
               {options ? (
                 <Select
@@ -174,7 +179,7 @@ function OverridesTable({
             </div>
             <div className="grid gap-1.5 w-20">
               {i === 0 && (
-                <span className="text-xs text-muted-foreground">Hour</span>
+                <span className="text-xs text-muted-foreground">{t("overview.hour")}</span>
               )}
               <Input
                 type="number"
@@ -190,7 +195,7 @@ function OverridesTable({
             </div>
             <div className="grid gap-1.5 w-20">
               {i === 0 && (
-                <span className="text-xs text-muted-foreground">Day</span>
+                <span className="text-xs text-muted-foreground">{t("overview.day")}</span>
               )}
               <Input
                 type="number"
@@ -206,7 +211,7 @@ function OverridesTable({
             </div>
             <div className="grid gap-1.5 w-20">
               {i === 0 && (
-                <span className="text-xs text-muted-foreground">Week</span>
+                <span className="text-xs text-muted-foreground">{t("overview.week")}</span>
               )}
               <Input
                 type="number"
@@ -238,7 +243,7 @@ function OverridesTable({
         >
           <SelectTrigger className="w-auto gap-1.5" size="sm">
             <Plus className="h-3.5 w-3.5" />
-            <SelectValue placeholder="Add override" />
+            <SelectValue placeholder={t("configSections.addOverride")} />
           </SelectTrigger>
           <SelectContent>
             {availableOptions && availableOptions.length > 0 ? (
@@ -249,14 +254,14 @@ function OverridesTable({
               ))
             ) : (
               <SelectItem value="__none__" disabled>
-                All options added
+                {t("configSections.allOptionsAdded")}
               </SelectItem>
             )}
           </SelectContent>
         </Select>
       ) : (
         <Button variant="outline" size="sm" onClick={() => addRow()} className="gap-1.5">
-          <Plus className="h-3.5 w-3.5" /> Add override
+          <Plus className="h-3.5 w-3.5" /> {t("configSections.addOverride")}
         </Button>
       )}
     </div>
@@ -264,6 +269,7 @@ function OverridesTable({
 }
 
 export function QuotaSection({ data, onSave, saving }: Props) {
+  const { t } = useTranslation();
   const [draft, setDraft] = useState<QuotaData>(
     data?.quota ?? DEFAULT_QUOTA
   );
@@ -309,16 +315,14 @@ export function QuotaSection({ data, onSave, saving }: Props) {
   return (
     <Card>
       <CardHeader className="pb-3">
-        <CardTitle className="text-base">Quota Limits</CardTitle>
+        <CardTitle className="text-base">{t("configSections.quotaLimits")}</CardTitle>
         <CardDescription>
-          Per-user/group request quotas. Limits are enforced per time window
-          (hour/day/week). Config merge priority: Group &gt; Channel &gt;
-          Provider &gt; Default.
+          {t("configSections.quotaDescription")}
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="flex items-center justify-between">
-          <InfoLabel tip="Enable request quota enforcement">Enabled</InfoLabel>
+          <InfoLabel tip={t("configSections.quotaEnabled")}>{t("common.enabled")}</InfoLabel>
           <Switch
             checked={draft.enabled}
             onCheckedChange={(v) => update({ enabled: v })}
@@ -328,40 +332,44 @@ export function QuotaSection({ data, onSave, saving }: Props) {
         {draft.enabled && (
           <>
             <div className="space-y-2">
-              <InfoLabel tip="Default limits applied to all users/groups unless overridden">
-                Default Limits
+              <InfoLabel tip={t("configSections.defaultLimitsTip")}>
+                {t("configSections.defaultLimits")}
               </InfoLabel>
               <QuotaWindowInputs
                 value={draft.default}
                 onChange={(v) => update({ default: v })}
+                t={t}
               />
             </div>
 
             <OverridesTable
-              label="Provider Overrides"
-              tip="Per-provider quota limits (e.g., anthropic, openai)"
+              label={t("configSections.providerOverrides")}
+              tip={t("configSections.providerOverridesTip")}
               entries={draft.providers ?? {}}
               onChange={(v) => update({ providers: v })}
-              keyPlaceholder="Select provider"
+              keyPlaceholder={t("configSections.selectProvider")}
               options={providerOptions}
+              t={t}
             />
 
             <OverridesTable
-              label="Channel Overrides"
-              tip="Per-channel quota limits (e.g., telegram, discord)"
+              label={t("configSections.channelOverrides")}
+              tip={t("configSections.channelOverridesTip")}
               entries={draft.channels ?? {}}
               onChange={(v) => update({ channels: v })}
-              keyPlaceholder="Select channel"
+              keyPlaceholder={t("configSections.selectChannel")}
               options={channelOptions}
+              t={t}
             />
 
             <OverridesTable
-              label="Group/User Overrides"
-              tip="Per-user or group quota limits (e.g., group:telegram:-100123)"
+              label={t("configSections.groupUserOverrides")}
+              tip={t("configSections.groupUserOverridesTip")}
               entries={draft.groups ?? {}}
               onChange={(v) => update({ groups: v })}
-              keyPlaceholder="Select group"
+              keyPlaceholder={t("configSections.selectGroup")}
               options={groupOptions.length > 0 ? groupOptions : undefined}
+              t={t}
             />
           </>
         )}
@@ -375,7 +383,7 @@ export function QuotaSection({ data, onSave, saving }: Props) {
               className="gap-1.5"
             >
               <Save className="h-3.5 w-3.5" />{" "}
-              {saving ? "Saving..." : "Save"}
+              {saving ? t("common.saving") : t("common.save")}
             </Button>
           </div>
         )}

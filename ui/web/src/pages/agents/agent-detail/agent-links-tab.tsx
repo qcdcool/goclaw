@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import { Link } from "react-router";
 import { Info } from "lucide-react";
 import { ConfirmDialog } from "@/components/shared/confirm-dialog";
@@ -13,6 +14,7 @@ interface AgentLinksTabProps {
 }
 
 export function AgentLinksTab({ agentId }: AgentLinksTabProps) {
+  const { t } = useTranslation();
   const { links, loading, load, createLink, updateLink, deleteLink } =
     useAgentLinks(agentId);
   const { agents } = useAgents();
@@ -79,9 +81,9 @@ export function AgentLinksTab({ agentId }: AgentLinksTabProps) {
       <ConfirmDialog
         open={!!deleteTarget}
         onOpenChange={() => setDeleteTarget(null)}
-        title="Delete Link"
-        description={`Remove the delegation link to "${deleteTarget?.name}"? Agents will no longer be able to delegate to each other through this link.`}
-        confirmLabel="Delete"
+        title={t("agentLinks.deleteLinkTitle")}
+        description={deleteTarget ? t("agentLinks.removeLinkConfirm", { name: deleteTarget.name }) : ""}
+        confirmLabel={t("common.delete")}
         variant="destructive"
         onConfirm={async () => {
           if (deleteTarget) {

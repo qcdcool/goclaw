@@ -9,6 +9,7 @@ import {
   XCircle,
   Minus,
 } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import type { HealthPayload, ChannelStatusEntry } from "./types";
 import { formatUptime } from "./hooks/use-live-uptime";
@@ -65,54 +66,55 @@ export function SystemHealthCard({
   clientCount: number;
   channelEntries: [string, ChannelStatusEntry][];
 }) {
+  const { t } = useTranslation();
   return (
     <Card className="gap-4">
       <CardHeader>
         <CardTitle className="text-base flex items-center gap-2">
-          <Monitor className="h-4 w-4" /> System Health
+          <Monitor className="h-4 w-4" /> {t("overview.systemHealth")}
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
           <HealthCell
-            label="Uptime"
+            label={t("overview.uptime")}
             icon={Timer}
             value={formatUptime(liveUptime)}
           />
           {health?.database && (
             <HealthCell
-              label="Database"
+              label={t("overview.database")}
               icon={Database}
               value={
                 health.database === "ok"
-                  ? "Connected"
+                  ? t("overview.connected")
                   : health.database
               }
               statusOk={health.database === "ok"}
             />
           )}
           <HealthCell
-            label="Providers"
+            label={t("overview.providers")}
             icon={Radio}
             value={
               enabledProviderCount > 0
-                ? `${enabledProviderCount} active`
-                : "none"
+                ? `${enabledProviderCount} ${t("overview.active")}`
+                : t("overview.none")
             }
             statusOk={enabledProviderCount > 0}
           />
           <HealthCell
-            label="Tools"
+            label={t("overview.tools")}
             icon={Wrench}
             value={String(health?.tools ?? 0)}
           />
           <HealthCell
-            label="Sessions"
+            label={t("overview.sessions")}
             icon={Monitor}
             value={String(sessions)}
           />
           <HealthCell
-            label="Clients"
+            label={t("overview.clients")}
             icon={Users}
             value={String(clientCount)}
           />

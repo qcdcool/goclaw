@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { Save } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -21,6 +22,7 @@ interface Props {
 }
 
 export function SessionsSection({ data, onSave, saving }: Props) {
+  const { t } = useTranslation();
   const [draft, setDraft] = useState<SessionsData>(data ?? DEFAULT);
   const [dirty, setDirty] = useState(false);
 
@@ -39,8 +41,8 @@ export function SessionsSection({ data, onSave, saving }: Props) {
   return (
     <Card>
       <CardHeader className="pb-3">
-        <CardTitle className="text-base">Sessions</CardTitle>
-        <CardDescription>Session scoping settings. Sessions are stored in PostgreSQL.</CardDescription>
+        <CardTitle className="text-base">{t("configSections.sessionsTitle")}</CardTitle>
+        <CardDescription>{t("configSections.sessionsDescription")}</CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
@@ -75,7 +77,7 @@ export function SessionsSection({ data, onSave, saving }: Props) {
         {dirty && (
           <div className="flex justify-end pt-2">
             <Button size="sm" onClick={() => onSave(draft)} disabled={saving} className="gap-1.5">
-              <Save className="h-3.5 w-3.5" /> {saving ? "Saving..." : "Save"}
+              <Save className="h-3.5 w-3.5" /> {saving ? t("common.saving") : t("common.save")}
             </Button>
           </div>
         )}

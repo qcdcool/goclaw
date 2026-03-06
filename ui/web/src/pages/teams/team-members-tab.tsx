@@ -1,4 +1,5 @@
 import { useState, useMemo, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Combobox } from "@/components/ui/combobox";
 import { Label } from "@/components/ui/label";
@@ -15,6 +16,7 @@ interface TeamMembersTabProps {
 }
 
 export function TeamMembersTab({ members, onAddMember, onRemoveMember }: TeamMembersTabProps) {
+  const { t } = useTranslation();
   const { agents, refresh: refreshAgents } = useAgents();
   const [selectedAgent, setSelectedAgent] = useState("");
   const [adding, setAdding] = useState(false);
@@ -50,14 +52,14 @@ export function TeamMembersTab({ members, onAddMember, onRemoveMember }: TeamMem
     <div className="max-w-2xl space-y-6">
       {onAddMember && (
         <div className="space-y-2">
-          <Label>Add Member</Label>
+          <Label>{t("teams.addMember")}</Label>
           <div className="flex gap-2">
             <div className="flex-1">
               <Combobox
                 value={selectedAgent}
                 onChange={setSelectedAgent}
                 options={availableAgents}
-                placeholder={availableAgents.length === 0 ? "No available agents" : "Search agents..."}
+                placeholder={availableAgents.length === 0 ? t("teams.noAvailableAgents") : t("teams.searchAgents")}
               />
             </div>
             <Button
@@ -67,7 +69,7 @@ export function TeamMembersTab({ members, onAddMember, onRemoveMember }: TeamMem
               onClick={handleAdd}
             >
               <UserPlus className="h-4 w-4" />
-              {adding ? "Adding..." : "Add"}
+              {adding ? t("teams.adding") : t("common.add")}
             </Button>
           </div>
         </div>

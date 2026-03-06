@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { Save } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -23,6 +24,7 @@ interface Props {
 }
 
 export function ToolsSection({ data, onSave, saving }: Props) {
+  const { t } = useTranslation();
   const [draft, setDraft] = useState<ToolsData>(data ?? DEFAULT);
   const [dirty, setDirty] = useState(false);
 
@@ -56,8 +58,8 @@ export function ToolsSection({ data, onSave, saving }: Props) {
   return (
     <Card>
       <CardHeader className="pb-3">
-        <CardTitle className="text-base">Tools</CardTitle>
-        <CardDescription>Tool policies, exec approval, web search, browser</CardDescription>
+        <CardTitle className="text-base">{t("configSections.toolsTitle")}</CardTitle>
+        <CardDescription>{t("configSections.toolsDescription")}</CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
         {/* Profile & Lists */}
@@ -302,7 +304,7 @@ export function ToolsSection({ data, onSave, saving }: Props) {
         {dirty && (
           <div className="flex justify-end pt-2">
             <Button size="sm" onClick={() => onSave(draft)} disabled={saving} className="gap-1.5">
-              <Save className="h-3.5 w-3.5" /> {saving ? "Saving..." : "Save"}
+              <Save className="h-3.5 w-3.5" /> {saving ? t("common.saving") : t("common.save")}
             </Button>
           </div>
         )}

@@ -92,12 +92,12 @@ export function ConfigPage() {
             : "w-44 shrink-0 sticky top-6 rounded-lg border bg-card p-3 shadow-sm"
           }
         >
-          <TabsTrigger value="general">General</TabsTrigger>
-          <TabsTrigger value="quota">Quota</TabsTrigger>
-          <TabsTrigger value="agents">Agents</TabsTrigger>
-          <TabsTrigger value="sessions">Sessions</TabsTrigger>
-          <TabsTrigger value="tools">Tools</TabsTrigger>
-          <TabsTrigger value="advanced">Advanced</TabsTrigger>
+          <TabsTrigger value="general">{t("config.tabGeneral")}</TabsTrigger>
+          <TabsTrigger value="quota">{t("config.tabQuota")}</TabsTrigger>
+          <TabsTrigger value="agents">{t("config.tabAgents")}</TabsTrigger>
+          <TabsTrigger value="sessions">{t("config.tabSessions")}</TabsTrigger>
+          <TabsTrigger value="tools">{t("config.tabTools")}</TabsTrigger>
+          <TabsTrigger value="advanced">{t("config.tabAdvanced")}</TabsTrigger>
         </TabsList>
 
         <TabsContent value="general" className="space-y-4">

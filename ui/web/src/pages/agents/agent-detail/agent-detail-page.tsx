@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -20,10 +21,13 @@ interface AgentDetailPageProps {
 
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
-function agentDisplayName(agent: { display_name?: string; agent_key: string }) {
-  if (agent.display_name) return agent.display_name;
-  if (UUID_RE.test(agent.agent_key)) return "Unnamed Agent";
-  return agent.agent_key;
+function useAgentDisplayName() {
+  const { t } = useTranslation();
+  return (agent: { display_name?: string; agent_key: string }) => {
+    if (agent.display_name) return agent.display_name;
+    if (UUID_RE.test(agent.agent_key)) return t("agents.unnamedAgent");
+    return agent.agent_key;
+  };
 }
 
 function agentSubtitle(agent: { display_name?: string; agent_key: string; id: string }) {
@@ -35,6 +39,8 @@ function agentSubtitle(agent: { display_name?: string; agent_key: string; id: st
 }
 
 export function AgentDetailPage({ agentId, onBack }: AgentDetailPageProps) {
+  const { t } = useTranslation();
+  const agentDisplayName = useAgentDisplayName();
   const { agent, files, loading, updateAgent, getFile, setFile, regenerateAgent, resummonAgent, refresh } =
     useAgentDetail(agentId);
   const [summoningOpen, setSummoningOpen] = useState(false);
@@ -60,7 +66,7 @@ export function AgentDetailPage({ agentId, onBack }: AgentDetailPageProps) {
     return (
       <div className="p-4 sm:p-6">
         <Button variant="ghost" onClick={onBack} className="mb-4 gap-1">
-          <ArrowLeft className="h-4 w-4" /> Back
+          <ArrowLeft className="h-4 w-4" /> {t("agents.back")}
         </Button>
         <DeferredSpinner />
       </div>
@@ -87,7 +93,7 @@ export function AgentDetailPage({ agentId, onBack }: AgentDetailPageProps) {
               <Star className="h-4 w-4 shrink-0 fill-amber-400 text-amber-400" />
             )}
             <Badge variant={agent.status === "active" ? "success" : agent.status === "summon_failed" ? "destructive" : "secondary"}>
-              {agent.status === "summon_failed" ? "Summon Failed" : agent.status}
+              {agent.status === "summon_failed" ? t("agents.summonFailed") : agent.status}
             </Badge>
           </div>
           <div className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-muted-foreground">
@@ -112,12 +118,12 @@ export function AgentDetailPage({ agentId, onBack }: AgentDetailPageProps) {
       <div className="max-w-4xl rounded-xl border bg-card p-3 shadow-sm sm:p-4">
         <Tabs value={activeTab} onValueChange={setActiveTab}>
           <TabsList className="w-full justify-start overflow-x-auto overflow-y-hidden">
-            <TabsTrigger value="general">General</TabsTrigger>
-            <TabsTrigger value="config">Config</TabsTrigger>
-            <TabsTrigger value="files">Files</TabsTrigger>
-            <TabsTrigger value="shares">Shares</TabsTrigger>
-            <TabsTrigger value="links">Links</TabsTrigger>
-            <TabsTrigger value="skills">Skills</TabsTrigger>
+            <TabsTrigger value="general">{t("agents.tabGeneral")}</TabsTrigger>
+            <TabsTrigger value="config">{t("agents.tabConfig")}</TabsTrigger>
+            <TabsTrigger value="files">{t("agents.tabFiles")}</TabsTrigger>
+            <TabsTrigger value="shares">{t("agents.tabShares")}</TabsTrigger>
+            <TabsTrigger value="links">{t("agents.tabLinks")}</TabsTrigger>
+            <TabsTrigger value="skills">{t("agents.tabSkills")}</TabsTrigger>
           </TabsList>
 
           <TabsContent value="general" className="mt-4">

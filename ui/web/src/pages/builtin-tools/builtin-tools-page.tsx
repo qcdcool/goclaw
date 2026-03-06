@@ -21,23 +21,23 @@ import { useDeferredLoading } from "@/hooks/use-deferred-loading";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-const CATEGORY_LABELS: Record<string, string> = {
-  filesystem: "Filesystem",
-  runtime: "Runtime",
-  web: "Web",
-  memory: "Memory",
-  media: "Media",
-  browser: "Browser",
-  sessions: "Sessions",
-  messaging: "Messaging",
-  scheduling: "Scheduling",
-  subagents: "Agents",
-  skills: "Skills",
-  delegation: "Delegation",
-  teams: "Teams",
+const CATEGORY_I18N_KEYS: Record<string, string> = {
+  filesystem: "builtinTools.categoryFilesystem",
+  runtime: "builtinTools.categoryRuntime",
+  web: "builtinTools.categoryWeb",
+  memory: "builtinTools.categoryMemory",
+  media: "builtinTools.categoryMedia",
+  browser: "builtinTools.categoryBrowser",
+  sessions: "builtinTools.categorySessions",
+  messaging: "builtinTools.categoryMessaging",
+  scheduling: "builtinTools.categoryScheduling",
+  subagents: "builtinTools.categorySubagents",
+  skills: "builtinTools.categorySkills",
+  delegation: "builtinTools.categoryDelegation",
+  teams: "builtinTools.categoryTeams",
 };
 
-const CATEGORY_ORDER = Object.keys(CATEGORY_LABELS);
+const CATEGORY_ORDER = Object.keys(CATEGORY_I18N_KEYS);
 
 function hasEditableSettings(tool: BuiltinToolData): boolean {
   return tool.settings != null && Object.keys(tool.settings).length > 0;
@@ -161,10 +161,11 @@ function CategoryGroup({
   onToggle: (tool: BuiltinToolData) => void;
   onSettings: (tool: BuiltinToolData) => void;
 }) {
+  const { t } = useTranslation();
   return (
     <div className="rounded-lg border">
       <div className="flex items-center gap-2 border-b bg-muted/40 px-4 py-2">
-        <span className="text-sm font-medium">{CATEGORY_LABELS[category] ?? category}</span>
+        <span className="text-sm font-medium">{CATEGORY_I18N_KEYS[category] ? t(CATEGORY_I18N_KEYS[category]) : category}</span>
         <Badge variant="secondary" className="h-5 px-1.5 text-[11px]">
           {tools.length}
         </Badge>

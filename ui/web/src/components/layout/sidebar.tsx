@@ -81,7 +81,7 @@ export function Sidebar({ collapsed, onNavItemClick }: SidebarProps) {
 
         <SidebarGroup label={t("sidebar.monitoring")} collapsed={collapsed}>
           <SidebarItem to={ROUTES.TRACES} icon={Activity} label={t("sidebar.traces")} collapsed={collapsed} />
-          <SidebarItem to={ROUTES.EVENTS} icon={Radar} label="Realtime Events" collapsed={collapsed} />
+          <SidebarItem to={ROUTES.EVENTS} icon={Radar} label={t("sidebar.realtimeEvents")} collapsed={collapsed} />
           <SidebarItem to={ROUTES.DELEGATIONS} icon={ArrowRightLeft} label={t("sidebar.delegations")} collapsed={collapsed} />
           <SidebarItem to={ROUTES.USAGE} icon={BarChart3} label={t("sidebar.usage")} collapsed={collapsed} />
           <SidebarItem to={ROUTES.LOGS} icon={Terminal} label={t("sidebar.logs")} collapsed={collapsed} />

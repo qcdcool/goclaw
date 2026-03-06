@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Plus, ChevronDown, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -26,6 +27,7 @@ interface LinkCreateFormProps {
 }
 
 export function LinkCreateForm({ agentOptions, onSubmit }: LinkCreateFormProps) {
+  const { t } = useTranslation();
   const [targetAgent, setTargetAgent] = useState("");
   const [direction, setDirection] = useState("outbound");
   const [description, setDescription] = useState("");
@@ -128,7 +130,7 @@ export function LinkCreateForm({ agentOptions, onSubmit }: LinkCreateFormProps) 
           ) : (
             <ChevronRight className="h-3.5 w-3.5" />
           )}
-          Advanced Settings
+          {t("agentLinks.advancedSettings")}
         </button>
         {showAdvanced && (
           <div className="space-y-3 rounded-md border border-dashed p-3">

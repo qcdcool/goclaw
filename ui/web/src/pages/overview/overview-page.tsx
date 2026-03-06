@@ -92,7 +92,7 @@ export function OverviewPage() {
       {/* Header */}
       <PageHeader
         title={t("overview.title")}
-        description="Gateway overview and quota usage"
+        description={t("overview.description")}
         actions={
           <div className="flex items-center gap-2">
             {health?.version && (
@@ -114,18 +114,18 @@ export function OverviewPage() {
           <AlertTriangle className="h-4 w-4" />
           <AlertTitle>
             {hasNoProviders
-              ? "No LLM providers configured"
-              : "No LLM providers enabled"}
+              ? t("overview.noProvidersConfigured")
+              : t("overview.noProvidersEnabled")}
           </AlertTitle>
           <AlertDescription>
             {hasNoProviders
-              ? "You need to add at least one LLM provider before agents can work. "
-              : "All providers are currently disabled. Enable at least one to start using agents. "}
+              ? t("overview.addOneProvider")
+              : t("overview.enableOneProvider")}
             <Link
               to={ROUTES.PROVIDERS}
               className="font-medium underline underline-offset-4 hover:text-foreground"
             >
-              Go to Provider Settings
+              {t("overview.goToProviderSettings")}
             </Link>
           </AlertDescription>
         </Alert>
@@ -135,17 +135,17 @@ export function OverviewPage() {
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <StatCard
           icon={Activity}
-          label="Requests Today"
+          label={t("overview.requestsToday")}
           value={quota?.requestsToday ?? 0}
           sub={
             quota?.uniqueUsersToday
-              ? `${quota.uniqueUsersToday} users`
+              ? `${quota.uniqueUsersToday} ${t("overview.users")}`
               : undefined
           }
         />
         <StatCard
           icon={Hash}
-          label="Tokens Today"
+          label={t("overview.tokensToday")}
           value={formatTokens(
             (quota?.inputTokensToday ?? 0) + (quota?.outputTokensToday ?? 0),
           )}
@@ -157,23 +157,23 @@ export function OverviewPage() {
         />
         <StatCard
           icon={Bot}
-          label="Agents"
+          label={t("overview.agents")}
           value={
             agentTotal > 0
               ? `${runningAgents} / ${agentTotal}`
               : "0"
           }
-          sub={agentTotal > 0 ? "running" : undefined}
+          sub={agentTotal > 0 ? t("overview.running") : undefined}
         />
         <StatCard
           icon={Radio}
-          label="Channels"
+          label={t("overview.channels")}
           value={
             channelEntries.length > 0
               ? `${channelsOnline} / ${channelEntries.length}`
               : "0"
           }
-          sub={channelEntries.length > 0 ? "online" : undefined}
+          sub={channelEntries.length > 0 ? t("overview.online") : undefined}
         />
       </div>
 

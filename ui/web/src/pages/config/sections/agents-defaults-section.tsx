@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { Save, ChevronDown, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -21,6 +22,7 @@ interface Props {
 }
 
 export function AgentsDefaultsSection({ data, onSave, saving }: Props) {
+  const { t } = useTranslation();
   const [draft, setDraft] = useState<AgentsData>(data ?? DEFAULT);
   const [dirty, setDirty] = useState(false);
   const [openSubs, setOpenSubs] = useState<Set<string>>(new Set());
@@ -68,8 +70,8 @@ export function AgentsDefaultsSection({ data, onSave, saving }: Props) {
   return (
     <Card>
       <CardHeader className="pb-3">
-        <CardTitle className="text-base">Agent Defaults</CardTitle>
-        <CardDescription>Default settings for all agents. Per-agent overrides are managed on the Agents page.</CardDescription>
+        <CardTitle className="text-base">{t("configSections.agentsDefaultsTitle")}</CardTitle>
+        <CardDescription>{t("configSections.agentsDefaultsDescription")}</CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
         {/* Core fields */}
@@ -79,7 +81,7 @@ export function AgentsDefaultsSection({ data, onSave, saving }: Props) {
           model={defaults.model ?? ""}
           onModelChange={(v) => updateDefaults({ model: v })}
           providerTip="Default LLM provider for all agents. Must match a configured provider name."
-          modelTip="Default model ID for all agents. Agents can override this in their own settings."
+          modelTip={t("configSections.modelTip")}
           showVerify
         />
 
@@ -252,7 +254,7 @@ export function AgentsDefaultsSection({ data, onSave, saving }: Props) {
         {dirty && (
           <div className="flex justify-end pt-2">
             <Button size="sm" onClick={() => onSave(draft)} disabled={saving} className="gap-1.5">
-              <Save className="h-3.5 w-3.5" /> {saving ? "Saving..." : "Save"}
+              <Save className="h-3.5 w-3.5" /> {saving ? t("common.saving") : t("common.save")}
             </Button>
           </div>
         )}
