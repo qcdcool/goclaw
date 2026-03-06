@@ -77,6 +77,8 @@
     "toggleTheme": "Toggle theme",
     "logout": "Logout",
     "language": "Language",
+    "pendingPairing": "{{count}} pending pairing request(s)",
+    "pairingRequests": "Pairing requests",
     "english": "English",
     "chinese": "中文"
   },
