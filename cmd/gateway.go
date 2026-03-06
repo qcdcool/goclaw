@@ -149,7 +149,6 @@ func runGateway() {
 	toolsReg.Register(tools.NewProcessTool())
 	toolsReg.Register(tools.NewGatewayTool())
 	toolsReg.Register(tools.NewCanvasTool(workspace, agentCfg.RestrictToWorkspace))
-
 	if editTool, ok := toolsReg.Get("edit"); ok {
 		toolsReg.Register(tools.NewAliasTool("edit_file", "Compatibility alias for edit", editTool))
 	}

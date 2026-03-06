@@ -14,33 +14,33 @@ import { useMinLoading } from "@/hooks/use-min-loading";
 import { useDeferredLoading } from "@/hooks/use-deferred-loading";
 
 export function TtsPage() {
-  const { t } = useTranslation();
-  const { tts, loading, saving, error, refresh, save } = useTtsConfig();
-  const spinning = useMinLoading(loading);
+    const { t } = useTranslation();
+    const { tts, loading, saving, error, refresh, save } = useTtsConfig();
+    const spinning = useMinLoading(loading);
 
-  const PROVIDERS = [
-    { value: "", label: t("tts.noneDisabled") },
-    { value: "openai", label: "OpenAI" },
-    { value: "elevenlabs", label: "ElevenLabs" },
-    { value: "edge", label: "Edge (Free)" },
-    { value: "minimax", label: "MiniMax" },
-  ];
+    const PROVIDERS = [
+        { value: "", label: t("tts.noneDisabled") },
+        { value: "openai", label: "OpenAI" },
+        { value: "elevenlabs", label: "ElevenLabs" },
+        { value: "edge", label: "Edge (Free)" },
+        { value: "minimax", label: "MiniMax" },
+    ];
 
-  const AUTO_MODES = [
-    { value: "off", label: t("tts.autoOff"), desc: t("tts.autoOffDesc") },
-    { value: "always", label: t("tts.autoAlways"), desc: t("tts.autoAlwaysDesc") },
-    { value: "inbound", label: t("tts.autoInbound"), desc: t("tts.autoInboundDesc") },
-    { value: "tagged", label: t("tts.autoTagged"), desc: t("tts.autoTaggedDesc") },
-  ];
+    const AUTO_MODES = [
+        { value: "off", label: t("tts.autoOff"), desc: t("tts.autoOffDesc") },
+        { value: "always", label: t("tts.autoAlways"), desc: t("tts.autoAlwaysDesc") },
+        { value: "inbound", label: t("tts.autoInbound"), desc: t("tts.autoInboundDesc") },
+        { value: "tagged", label: t("tts.autoTagged"), desc: t("tts.autoTaggedDesc") },
+    ];
 
-  const REPLY_MODES = [
-    { value: "final", label: t("tts.replyFinal"), desc: t("tts.replyFinalDesc") },
-    { value: "all", label: t("tts.replyAll"), desc: t("tts.replyAllDesc") },
-  ];
+    const REPLY_MODES = [
+        { value: "final", label: t("tts.replyFinal"), desc: t("tts.replyFinalDesc") },
+        { value: "all", label: t("tts.replyAll"), desc: t("tts.replyAllDesc") },
+    ];
 
-  const [draft, setDraft] = useState<TtsConfig>(tts);
-  const showSkeleton = useDeferredLoading(loading && !draft.provider);
-  const [dirty, setDirty] = useState(false);
+    const [draft, setDraft] = useState<TtsConfig>(tts);
+    const showSkeleton = useDeferredLoading(loading && !draft.provider);
+    const [dirty, setDirty] = useState(false);
 
     useEffect(() => {
         setDraft(tts);
