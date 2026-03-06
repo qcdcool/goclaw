@@ -26,6 +26,7 @@ import (
 	"github.com/nextlevelbuilder/goclaw/internal/gateway"
 	"github.com/nextlevelbuilder/goclaw/internal/gateway/methods"
 	mcpbridge "github.com/nextlevelbuilder/goclaw/internal/mcp"
+	"github.com/nextlevelbuilder/goclaw/internal/pairing"
 	"github.com/nextlevelbuilder/goclaw/internal/permissions"
 	"github.com/nextlevelbuilder/goclaw/internal/providers"
 	"github.com/nextlevelbuilder/goclaw/internal/sandbox"
@@ -269,7 +270,11 @@ func runGateway() {
 		subagentMgr.SetAnnounceQueue(announceQueue)
 
 		toolsReg.Register(tools.NewSpawnTool(subagentMgr, "default", 0))
-		slog.Info("subagent system enabled", "tools", []string{"spawn"})
+		toolsReg.Register(tools.NewSubagentTool(subagentMgr, "default", 0))
+		if subagentTool, ok := toolsReg.Get("subagent"); ok {
+			toolsReg.Register(tools.NewAliasTool("subagents", "Compatibility alias for subagent", subagentTool))
+		}
+		slog.Info("subagent system enabled", "tools", []string{"spawn", "subagent", "subagents"})
 	}
 
 	// Exec approval system — always active (deny patterns + safe bins + configurable ask mode)

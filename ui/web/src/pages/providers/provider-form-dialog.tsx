@@ -87,61 +87,61 @@ export function ProviderFormDialog({ open, onOpenChange, provider, onSubmit }: P
         }
     };
 
-  return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-h-[85vh] flex flex-col">
-        <DialogHeader>
-          <DialogTitle>{isEdit ? "Edit Provider" : "Add Provider"}</DialogTitle>
-          <DialogDescription>Configure an LLM provider connection.</DialogDescription>
-        </DialogHeader>
-        <div className="space-y-4 py-4 overflow-y-auto min-h-0">
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-            <div className="space-y-2">
-              <Label htmlFor="name">Name *</Label>
-              <Input
-                id="name"
-                value={name}
-                onChange={(e) => setName(slugify(e.target.value))}
-                placeholder="e.g. openrouter"
-                disabled={isEdit}
-              />
-              <p className="text-xs text-muted-foreground">Lowercase, numbers, hyphens</p>
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="displayName">Display Name</Label>
-              <Input
-                id="displayName"
-                value={displayName}
-                onChange={(e) => setDisplayName(e.target.value)}
-                placeholder="OpenRouter"
-              />
-            </div>
-          </div>
+    return (
+        <Dialog open={open} onOpenChange={onOpenChange}>
+            <DialogContent className="max-h-[85vh] flex flex-col">
+                <DialogHeader>
+                    <DialogTitle>{isEdit ? "Edit Provider" : "Add Provider"}</DialogTitle>
+                    <DialogDescription>Configure an LLM provider connection.</DialogDescription>
+                </DialogHeader>
+                <div className="space-y-4 py-4 overflow-y-auto min-h-0">
+                    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                        <div className="space-y-2">
+                            <Label htmlFor="name">Name *</Label>
+                            <Input
+                                id="name"
+                                value={name}
+                                onChange={(e) => setName(slugify(e.target.value))}
+                                placeholder="e.g. openrouter"
+                                disabled={isEdit}
+                            />
+                            <p className="text-xs text-muted-foreground">Lowercase, numbers, hyphens</p>
+                        </div>
+                        <div className="space-y-2">
+                            <Label htmlFor="displayName">Display Name</Label>
+                            <Input
+                                id="displayName"
+                                value={displayName}
+                                onChange={(e) => setDisplayName(e.target.value)}
+                                placeholder="OpenRouter"
+                            />
+                        </div>
+                    </div>
 
-          <div className="space-y-2">
-            <Label>Provider Type *</Label>
-            <Select
-              value={providerType}
-              onValueChange={(v) => {
-                setProviderType(v);
-                if (!isEdit) {
-                  const preset = PROVIDER_TYPES.find((t) => t.value === v);
-                  setApiBase(preset?.apiBase || "");
-                }
-              }}
-            >
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {PROVIDER_TYPES.map((t) => (
-                  <SelectItem key={t.value} value={t.value}>
-                    {t.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
+                    <div className="space-y-2">
+                        <Label>Provider Type *</Label>
+                        <Select
+                            value={providerType}
+                            onValueChange={(v) => {
+                                setProviderType(v);
+                                if (!isEdit) {
+                                    const preset = PROVIDER_TYPES.find((t) => t.value === v);
+                                    setApiBase(preset?.apiBase || "");
+                                }
+                            }}
+                        >
+                            <SelectTrigger>
+                                <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                                {PROVIDER_TYPES.map((t) => (
+                                    <SelectItem key={t.value} value={t.value}>
+                                        {t.label}
+                                    </SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                    </div>
 
                     <div className="space-y-2">
                         <Label htmlFor="apiBase">API Base URL</Label>

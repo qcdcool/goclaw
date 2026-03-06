@@ -14,17 +14,17 @@ import { useMinLoading } from "@/hooks/use-min-loading";
 import { useDeferredLoading } from "@/hooks/use-deferred-loading";
 
 export function TtsPage() {
-  const { t } = useTranslation();
-  const { tts, loading, saving, error, refresh, save } = useTtsConfig();
-  const spinning = useMinLoading(loading);
+    const { t } = useTranslation();
+    const { tts, loading, saving, error, refresh, save } = useTtsConfig();
+    const spinning = useMinLoading(loading);
 
-  const PROVIDERS = [
-    { value: "", label: t("tts.noneDisabled") },
-    { value: "openai", label: "OpenAI" },
-    { value: "elevenlabs", label: "ElevenLabs" },
-    { value: "edge", label: "Edge (Free)" },
-    { value: "minimax", label: "MiniMax" },
-  ];
+    const PROVIDERS = [
+        { value: "", label: t("tts.noneDisabled") },
+        { value: "openai", label: "OpenAI" },
+        { value: "elevenlabs", label: "ElevenLabs" },
+        { value: "edge", label: "Edge (Free)" },
+        { value: "minimax", label: "MiniMax" },
+    ];
 
   const AUTO_MODES = [
         { value: "off", label: t("tts.autoOff"), desc: t("tts.autoOffDesc") },

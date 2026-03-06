@@ -26,11 +26,11 @@ var virtualSystemFiles = map[string]string{
 type ReadFileTool struct {
 	workspace        string
 	restrict         bool
-	allowedPrefixes  []string              // extra allowed path prefixes (e.g. skills dirs)
-	deniedPrefixes   []string              // path prefixes to deny access to (e.g. .goclaw)
-	sandboxMgr       sandbox.Manager       // nil = direct host access
+	allowedPrefixes  []string               // extra allowed path prefixes (e.g. skills dirs)
+	deniedPrefixes   []string               // path prefixes to deny access to (e.g. .goclaw)
+	sandboxMgr       sandbox.Manager        // nil = direct host access
 	contextFileIntc  *ContextFileInterceptor // nil = no virtual FS routing
-	memIntc          *MemoryInterceptor      // nil = no memory routing
+	memIntc          *MemoryInterceptor     // nil = no memory routing
 	groupWriterCache *store.GroupWriterCache // nil = no group read restriction
 }
 

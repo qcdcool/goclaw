@@ -67,7 +67,7 @@ var toolAliases = map[string]string{
 	"apply-patch":    "apply_patch",
 	"edit_file":      "edit",
 	"sessions_spawn": "spawn",
-	"subagents":   "subagent",
+	"subagents": "subagent",
 }
 
 // Subagent deny lists — tools subagents cannot use.
