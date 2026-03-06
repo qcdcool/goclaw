@@ -463,11 +463,14 @@
   "logs": {
     "title": "日志",
     "description": "实时日志跟踪",
+    "liveTailingAt": "正在以 {{level}} 级别跟踪",
+    "logLevel": "日志级别",
     "startTail": "开始跟踪",
     "stop": "停止",
     "clear": "清空",
     "waitingForLogs": "等待日志...",
-    "clickStartTail": "点击 \"开始跟踪\" 开始流式传输日志。",
+    "clickStartTail": "点击「开始跟踪」开始流式传输日志。",
+    "noMatch": "没有匹配的日志。",
     "notImplemented": "此功能在 Go 后端尚未实现。"
   },
   "customTools": {

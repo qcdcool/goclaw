@@ -463,11 +463,14 @@
   "logs": {
     "title": "Logs",
     "description": "Live log tailing",
+    "liveTailingAt": "Live tailing at {{level}} level",
+    "logLevel": "Log level",
     "startTail": "Start Tail",
     "stop": "Stop",
     "clear": "Clear",
     "waitingForLogs": "Waiting for logs...",
     "clickStartTail": "Click \"Start Tail\" to begin streaming logs.",
+    "noMatch": "No logs match filter.",
     "notImplemented": "This feature is not yet implemented on the Go backend."
   },
   "customTools": {
