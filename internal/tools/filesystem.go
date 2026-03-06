@@ -16,9 +16,9 @@ import (
 type ReadFileTool struct {
 	workspace       string
 	restrict        bool
-	allowedPrefixes []string              // extra allowed path prefixes (e.g. skills dirs)
-	deniedPrefixes  []string              // path prefixes to deny access to (e.g. .goclaw)
-	sandboxMgr      sandbox.Manager       // nil = direct host access
+	allowedPrefixes []string                // extra allowed path prefixes (e.g. skills dirs)
+	deniedPrefixes  []string                // path prefixes to deny access to (e.g. .goclaw)
+	sandboxMgr      sandbox.Manager         // nil = direct host access
 	contextFileIntc *ContextFileInterceptor // nil = no virtual FS routing (standalone mode)
 	memIntc         *MemoryInterceptor      // nil = no memory routing (standalone mode)
 }
@@ -253,12 +253,12 @@ func resolvePath(path, workspace string, restrict bool) (string, error) {
 				}
 				real = target
 			} else {
-				// Truly non-existent file (not a symlink): resolve parent and re-validate.
-				parentReal, parentErr := filepath.EvalSymlinks(filepath.Dir(absResolved))
-				if parentErr != nil {
+				// Truly non-existent path (not a symlink): resolve the nearest
+				// existing ancestor, then append the missing tail safely.
+				real, err = resolveViaExistingAncestor(absResolved)
+				if err != nil {
 					return "", fmt.Errorf("access denied: cannot resolve path")
 				}
-				real = filepath.Join(parentReal, filepath.Base(absResolved))
 			}
 		} else {
 			// Permission error or other — reject.
@@ -279,6 +279,38 @@ func resolvePath(path, workspace string, restrict bool) (string, error) {
 	}
 
 	return real, nil
+}
+
+// resolveViaExistingAncestor resolves symlinks on the nearest existing ancestor
+// of absPath, then rejoins any missing path tail. This allows secure writes to
+// new nested paths without requiring every parent directory to already exist.
+func resolveViaExistingAncestor(absPath string) (string, error) {
+	if !filepath.IsAbs(absPath) {
+		return "", fmt.Errorf("path must be absolute")
+	}
+	curr := filepath.Clean(absPath)
+	var tail []string
+	for {
+		if _, err := os.Lstat(curr); err == nil {
+			break
+		} else if !os.IsNotExist(err) {
+			return "", err
+		}
+		parent := filepath.Dir(curr)
+		if parent == curr {
+			return "", fmt.Errorf("no existing ancestor")
+		}
+		tail = append(tail, filepath.Base(curr))
+		curr = parent
+	}
+	realBase, err := filepath.EvalSymlinks(curr)
+	if err != nil {
+		return "", err
+	}
+	for i := len(tail) - 1; i >= 0; i-- {
+		realBase = filepath.Join(realBase, tail[i])
+	}
+	return realBase, nil
 }
 
 // isPathInside checks whether child is inside or equal to parent directory.

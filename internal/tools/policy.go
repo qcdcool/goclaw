@@ -12,9 +12,9 @@ import (
 var toolGroups = map[string][]string{
 	"memory":     {"memory_search", "memory_get"},
 	"web":        {"web_search", "web_fetch"},
-	"fs":         {"read_file", "write_file", "list_files", "edit_file", "search", "glob"},
+	"fs":         {"read_file", "write_file", "list_files", "edit", "edit_file", "search", "glob"},
 	"runtime":    {"exec", "process"},
-	"sessions":   {"sessions_list", "sessions_history", "sessions_send", "sessions_spawn", "subagents", "session_status"},
+	"sessions":   {"sessions_list", "sessions_history", "sessions_send", "sessions_spawn", "subagent", "subagents", "session_status"},
 	"ui":         {"browser", "canvas"},
 	"automation": {"cron", "gateway"},
 	"messaging":  {"message"},
@@ -24,8 +24,9 @@ var toolGroups = map[string][]string{
 	"goclaw": {
 		"browser", "canvas", "nodes", "cron", "message", "gateway",
 		"agents_list", "sessions_list", "sessions_history", "sessions_send",
-		"sessions_spawn", "subagents", "session_status",
+		"sessions_spawn", "subagent", "subagents", "session_status",
 		"memory_search", "memory_get", "web_search", "web_fetch", "read_image", "create_image",
+		"search", "glob", "process", "edit", "edit_file",
 	},
 }
 
@@ -58,6 +59,8 @@ var toolProfiles = map[string][]string{
 var toolAliases = map[string]string{
 	"bash":        "exec",
 	"apply-patch": "apply_patch",
+	"edit_file":   "edit",
+	"subagents":   "subagent",
 }
 
 // Subagent deny lists — tools subagents cannot use.

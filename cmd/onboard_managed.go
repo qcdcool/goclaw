@@ -334,7 +334,7 @@ func resolveProviderAPIBase(providerName string) string {
 	case "xai":
 		return "https://api.x.ai/v1"
 	case "minimax":
-		return "https://api.minimax.io/v1"
+		return "https://api.minimaxi.com/v1"
 	case "cohere":
 		return "https://api.cohere.com/v2"
 	case "perplexity":

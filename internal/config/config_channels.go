@@ -272,7 +272,7 @@ type TtsEdgeConfig struct {
 type TtsMiniMaxConfig struct {
 	APIKey  string `json:"api_key,omitempty"`
 	GroupID string `json:"group_id,omitempty"` // MiniMax GroupId (required)
-	APIBase string `json:"api_base,omitempty"` // default "https://api.minimax.io/v1"
+	APIBase string `json:"api_base,omitempty"` // default "https://api.minimaxi.com/v1"
 	Model   string `json:"model,omitempty"`    // default "speech-02-hd"
 	VoiceID string `json:"voice_id,omitempty"` // default "Wise_Woman"
 }

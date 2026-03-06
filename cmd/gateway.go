@@ -22,6 +22,7 @@ import (
 	"github.com/nextlevelbuilder/goclaw/internal/cron"
 	"github.com/nextlevelbuilder/goclaw/internal/gateway"
 	"github.com/nextlevelbuilder/goclaw/internal/gateway/methods"
+	mcpbridge "github.com/nextlevelbuilder/goclaw/internal/mcp"
 	"github.com/nextlevelbuilder/goclaw/internal/pairing"
 	"github.com/nextlevelbuilder/goclaw/internal/permissions"
 	"github.com/nextlevelbuilder/goclaw/internal/providers"
@@ -32,7 +33,6 @@ import (
 	"github.com/nextlevelbuilder/goclaw/internal/store"
 	"github.com/nextlevelbuilder/goclaw/internal/store/file"
 	"github.com/nextlevelbuilder/goclaw/internal/store/pg"
-	mcpbridge "github.com/nextlevelbuilder/goclaw/internal/mcp"
 	"github.com/nextlevelbuilder/goclaw/internal/tools"
 	"github.com/nextlevelbuilder/goclaw/internal/tracing"
 	"github.com/nextlevelbuilder/goclaw/pkg/browser"
@@ -147,6 +147,15 @@ func runGateway() {
 		toolsReg.Register(tools.NewEditTool(workspace, agentCfg.RestrictToWorkspace))
 		toolsReg.Register(tools.NewExecTool(workspace, agentCfg.RestrictToWorkspace))
 	}
+	toolsReg.Register(tools.NewSearchTool(workspace, agentCfg.RestrictToWorkspace))
+	toolsReg.Register(tools.NewGlobTool(workspace, agentCfg.RestrictToWorkspace))
+	toolsReg.Register(tools.NewProcessTool())
+	toolsReg.Register(tools.NewGatewayTool())
+	toolsReg.Register(tools.NewCanvasTool(workspace, agentCfg.RestrictToWorkspace))
+
+	if editTool, ok := toolsReg.Get("edit"); ok {
+		toolsReg.Register(tools.NewAliasTool("edit_file", "Compatibility alias for edit", editTool))
+	}
 
 	// Memory system
 	memMgr := setupMemory(workspace, cfg)
@@ -185,6 +194,9 @@ func runGateway() {
 	// Vision fallback tool (for non-vision providers like MiniMax)
 	toolsReg.Register(tools.NewReadImageTool(providerRegistry))
 	toolsReg.Register(tools.NewCreateImageTool(providerRegistry))
+	if createImageTool, ok := toolsReg.Get("create_image"); ok {
+		toolsReg.Register(tools.NewAliasTool("image", "Compatibility alias for create_image", createImageTool))
+	}
 
 	// TTS (text-to-speech) system
 	ttsMgr := setupTTS(cfg)
@@ -253,7 +265,10 @@ func runGateway() {
 
 		toolsReg.Register(tools.NewSpawnTool(subagentMgr, "default", 0))
 		toolsReg.Register(tools.NewSubagentTool(subagentMgr, "default", 0))
-		slog.Info("subagent system enabled", "tools", []string{"spawn", "subagent"})
+		if subagentTool, ok := toolsReg.Get("subagent"); ok {
+			toolsReg.Register(tools.NewAliasTool("subagents", "Compatibility alias for subagent", subagentTool))
+		}
+		slog.Info("subagent system enabled", "tools", []string{"spawn", "subagent", "subagents"})
 	}
 
 	// Exec approval system — always active (deny patterns + safe bins + configurable ask mode)
@@ -486,6 +501,7 @@ func runGateway() {
 	toolsReg.Register(tools.NewSessionStatusTool())
 	toolsReg.Register(tools.NewSessionsHistoryTool())
 	toolsReg.Register(tools.NewSessionsSendTool())
+	toolsReg.Register(tools.NewSessionsSpawnTool())
 
 	// Message tool (send to channels)
 	toolsReg.Register(tools.NewMessageTool())
@@ -517,7 +533,7 @@ func runGateway() {
 	}
 
 	// Wire SessionStoreAware + BusAware on tools that need them
-	for _, name := range []string{"sessions_list", "session_status", "sessions_history", "sessions_send"} {
+	for _, name := range []string{"sessions_list", "session_status", "sessions_history", "sessions_send", "sessions_spawn"} {
 		if t, ok := toolsReg.Get(name); ok {
 			if sa, ok := t.(tools.SessionStoreAware); ok {
 				sa.SetSessionStore(sessStore)

@@ -19,7 +19,7 @@ import (
 type MiniMaxProvider struct {
 	apiKey    string
 	groupID   string // MiniMax GroupId (required)
-	apiBase   string // default "https://api.minimax.io/v1"
+	apiBase   string // default "https://api.minimaxi.com/v1"
 	model     string // default "speech-02-hd"
 	voiceID   string // default "Wise_Woman"
 	timeoutMs int
@@ -46,7 +46,7 @@ func NewMiniMaxProvider(cfg MiniMaxConfig) *MiniMaxProvider {
 		timeoutMs: cfg.TimeoutMs,
 	}
 	if p.apiBase == "" {
-		p.apiBase = "https://api.minimax.io/v1"
+		p.apiBase = "https://api.minimaxi.com/v1"
 	}
 	if p.model == "" {
 		p.model = "speech-02-hd"

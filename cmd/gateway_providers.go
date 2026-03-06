@@ -51,7 +51,7 @@ func registerProviders(registry *providers.Registry, cfg *config.Config) {
 	}
 
 	if cfg.Providers.MiniMax.APIKey != "" {
-		registry.Register(providers.NewOpenAIProvider("minimax", cfg.Providers.MiniMax.APIKey, "https://api.minimax.io/v1", "MiniMax-M2.5").
+		registry.Register(providers.NewOpenAIProvider("minimax", cfg.Providers.MiniMax.APIKey, "https://api.minimaxi.com/v1", "MiniMax-M2.5").
 			WithChatPath("/text/chatcompletion_v2"))
 		slog.Info("registered provider", "name", "minimax")
 	}
