@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Plug, Plus, RefreshCw, Pencil, Trash2, Users } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { PageHeader } from "@/components/shared/page-header";
@@ -22,6 +23,7 @@ const transportBadge: Record<string, string> = {
 };
 
 export function MCPPage() {
+  const { t } = useTranslation();
   const { servers, loading, refresh, createServer, updateServer, deleteServer, grantAgent, revokeAgent, listAgentGrants } = useMCP();
   const spinning = useMinLoading(loading);
   const showSkeleton = useDeferredLoading(loading && servers.length === 0);
@@ -65,15 +67,15 @@ export function MCPPage() {
   return (
     <div className="p-4 sm:p-6">
       <PageHeader
-        title="MCP Servers"
-        description="Manage Model Context Protocol server connections"
+        title={t("mcp.title")}
+        description={t("mcp.description")}
         actions={
           <div className="flex gap-2">
             <Button size="sm" onClick={() => { setEditServer(null); setFormOpen(true); }} className="gap-1">
-              <Plus className="h-3.5 w-3.5" /> Add Server
+              <Plus className="h-3.5 w-3.5" /> {t("mcp.addServer")}
             </Button>
             <Button variant="outline" size="sm" onClick={refresh} disabled={spinning} className="gap-1">
-              <RefreshCw className={"h-3.5 w-3.5" + (spinning ? " animate-spin" : "")} /> Refresh
+              <RefreshCw className={"h-3.5 w-3.5" + (spinning ? " animate-spin" : "")} /> {t("common.refresh")}
             </Button>
           </div>
         }
@@ -83,7 +85,7 @@ export function MCPPage() {
         <SearchInput
           value={search}
           onChange={setSearch}
-          placeholder="Search servers..."
+          placeholder={t("mcp.searchPlaceholder")}
           className="max-w-sm"
         />
       </div>
@@ -94,20 +96,20 @@ export function MCPPage() {
         ) : filtered.length === 0 ? (
           <EmptyState
             icon={Plug}
-            title={search ? "No matching servers" : "No MCP servers"}
-            description={search ? "Try a different search term." : "Add your first MCP server to get started."}
+            title={search ? t("mcp.noMatching") : t("mcp.noServers")}
+            description={search ? t("common.tryDifferentSearch") : t("mcp.addFirst")}
           />
         ) : (
           <div className="rounded-md border">
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b bg-muted/50">
-                  <th className="px-4 py-3 text-left font-medium">Name</th>
-                  <th className="px-4 py-3 text-left font-medium">Transport</th>
-                  <th className="px-4 py-3 text-left font-medium">Tool Prefix</th>
-                  <th className="px-4 py-3 text-left font-medium">Enabled</th>
-                  <th className="px-4 py-3 text-left font-medium">Created By</th>
-                  <th className="px-4 py-3 text-right font-medium">Actions</th>
+                  <th className="px-4 py-3 text-left font-medium">{t("mcp.tableName")}</th>
+                  <th className="px-4 py-3 text-left font-medium">{t("mcp.tableTransport")}</th>
+                  <th className="px-4 py-3 text-left font-medium">{t("mcp.tableToolPrefix")}</th>
+                  <th className="px-4 py-3 text-left font-medium">{t("mcp.tableEnabled")}</th>
+                  <th className="px-4 py-3 text-left font-medium">{t("mcp.tableCreatedBy")}</th>
+                  <th className="px-4 py-3 text-right font-medium">{t("mcp.tableActions")}</th>
                 </tr>
               </thead>
               <tbody>
@@ -134,7 +136,7 @@ export function MCPPage() {
                     </td>
                     <td className="px-4 py-3">
                       <Badge variant={srv.enabled ? "default" : "secondary"}>
-                        {srv.enabled ? "Yes" : "No"}
+                        {srv.enabled ? t("common.yes") : t("common.no")}
                       </Badge>
                     </td>
                     <td className="px-4 py-3 text-muted-foreground">{srv.created_by || "-"}</td>
@@ -145,7 +147,7 @@ export function MCPPage() {
                           size="sm"
                           onClick={() => setGrantsServer(srv)}
                           className="gap-1"
-                          title="Manage grants"
+                          title={t("mcp.manageGrants")}
                         >
                           <Users className="h-3.5 w-3.5" />
                         </Button>
@@ -204,9 +206,9 @@ export function MCPPage() {
       <ConfirmDialog
         open={!!deleteTarget}
         onOpenChange={(open) => !open && setDeleteTarget(null)}
-        title="Delete MCP Server"
-        description={`Are you sure you want to delete "${deleteTarget?.display_name || deleteTarget?.name}"? This will also remove all associated grants.`}
-        confirmLabel="Delete"
+        title={t("mcp.deleteServer")}
+        description={t("mcp.deleteConfirm", { name: deleteTarget?.display_name || deleteTarget?.name })}
+        confirmLabel={t("common.delete")}
         variant="destructive"
         onConfirm={handleDelete}
         loading={deleteLoading}

@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { ShieldCheck, Check, X, RefreshCw } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { PageHeader } from "@/components/shared/page-header";
@@ -12,6 +13,7 @@ import { useMinLoading } from "@/hooks/use-min-loading";
 import { useDeferredLoading } from "@/hooks/use-deferred-loading";
 
 export function ApprovalsPage() {
+  const { t } = useTranslation();
   const { pending, loading, refresh, approve, deny } = useApprovals();
   const spinning = useMinLoading(loading);
   const showSkeleton = useDeferredLoading(loading && pending.length === 0);
@@ -21,15 +23,15 @@ export function ApprovalsPage() {
   return (
     <div className="p-4 sm:p-6">
       <PageHeader
-        title="Approvals"
-        description="Pending execution approvals"
+        title={t("approvals.title")}
+        description={t("approvals.description")}
         actions={
           <div className="flex items-center gap-2">
             {pending.length > 0 && (
-              <Badge variant="destructive">{pending.length} pending</Badge>
+              <Badge variant="destructive">{pending.length} {t("approvals.pending")}</Badge>
             )}
             <Button variant="outline" size="sm" onClick={refresh} disabled={spinning} className="gap-1">
-              <RefreshCw className={"h-3.5 w-3.5" + (spinning ? " animate-spin" : "")} /> Refresh
+              <RefreshCw className={"h-3.5 w-3.5" + (spinning ? " animate-spin" : "")} /> {t("common.refresh")}
             </Button>
           </div>
         }
@@ -41,8 +43,8 @@ export function ApprovalsPage() {
         ) : pending.length === 0 ? (
           <EmptyState
             icon={ShieldCheck}
-            title="No pending approvals"
-            description="All execution requests have been resolved. New requests will appear here in real-time."
+            title={t("approvals.noPending")}
+            description={t("approvals.allResolved")}
           />
         ) : (
           <div className="space-y-3">
@@ -66,7 +68,7 @@ export function ApprovalsPage() {
                       onClick={() => setApproveTarget({ approval, always: false })}
                       className="gap-1"
                     >
-                      <Check className="h-3.5 w-3.5" /> Allow Once
+                      <Check className="h-3.5 w-3.5" /> {t("approvals.allowOnce")}
                     </Button>
                     <Button
                       variant="outline"
@@ -74,7 +76,7 @@ export function ApprovalsPage() {
                       onClick={() => setApproveTarget({ approval, always: true })}
                       className="gap-1"
                     >
-                      <Check className="h-3.5 w-3.5" /> Allow Always
+                      <Check className="h-3.5 w-3.5" /> {t("approvals.allowAlways")}
                     </Button>
                     <Button
                       variant="destructive"
@@ -82,7 +84,7 @@ export function ApprovalsPage() {
                       onClick={() => setDenyTarget(approval)}
                       className="gap-1"
                     >
-                      <X className="h-3.5 w-3.5" /> Deny
+                      <X className="h-3.5 w-3.5" /> {t("approvals.deny")}
                     </Button>
                   </div>
                 </div>
@@ -95,13 +97,13 @@ export function ApprovalsPage() {
       <ConfirmDialog
         open={!!approveTarget}
         onOpenChange={() => setApproveTarget(null)}
-        title={approveTarget?.always ? "Allow Always" : "Allow Once"}
+        title={approveTarget?.always ? t("approvals.allowAlways") : t("approvals.allowOnce")}
         description={
           approveTarget?.always
-            ? `Permanently allow "${approveTarget.approval.command}" for agent "${approveTarget.approval.agentId}"? This command will be auto-approved in the future.`
-            : `Allow execution of "${approveTarget?.approval.command}" from agent "${approveTarget?.approval.agentId}"?`
+            ? t("approvals.allowAlwaysConfirm", { command: approveTarget.approval.command, agentId: approveTarget.approval.agentId })
+            : t("approvals.allowOnceConfirm", { command: approveTarget?.approval.command, agentId: approveTarget?.approval.agentId })
         }
-        confirmLabel={approveTarget?.always ? "Allow Always" : "Allow Once"}
+        confirmLabel={approveTarget?.always ? t("approvals.allowAlways") : t("approvals.allowOnce")}
         onConfirm={async () => {
           if (approveTarget) {
             await approve(approveTarget.approval.id, approveTarget.always);
@@ -113,9 +115,9 @@ export function ApprovalsPage() {
       <ConfirmDialog
         open={!!denyTarget}
         onOpenChange={() => setDenyTarget(null)}
-        title="Deny Execution"
-        description={`Deny execution request "${denyTarget?.command}" from agent "${denyTarget?.agentId}"?`}
-        confirmLabel="Deny"
+        title={t("approvals.denyExecution")}
+        description={t("approvals.denyConfirm", { command: denyTarget?.command, agentId: denyTarget?.agentId })}
+        confirmLabel={t("approvals.deny")}
         variant="destructive"
         onConfirm={async () => {
           if (denyTarget) {

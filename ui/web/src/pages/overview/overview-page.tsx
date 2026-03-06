@@ -1,6 +1,7 @@
 import { useEffect, useCallback } from "react";
 import { Activity, Bot, Hash, Radio, AlertTriangle } from "lucide-react";
 import { Link } from "react-router";
+import { useTranslation } from "react-i18next";
 import { PageHeader } from "@/components/shared/page-header";
 import { StatusBadge } from "@/components/shared/status-badge";
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
@@ -31,6 +32,7 @@ import { QuotaUsageCard } from "./quota-usage-card";
 const REFRESH_INTERVAL = 30_000;
 
 export function OverviewPage() {
+  const { t } = useTranslation();
   const connected = useAuthStore((s) => s.connected);
   const { call: fetchHealth, data: health } =
     useWsCall<HealthPayload>(Methods.HEALTH);
@@ -89,7 +91,7 @@ export function OverviewPage() {
     <div className="space-y-6 p-4 sm:p-6">
       {/* Header */}
       <PageHeader
-        title="Dashboard"
+        title={t("overview.title")}
         description="Gateway overview and quota usage"
         actions={
           <div className="flex items-center gap-2">
@@ -100,7 +102,7 @@ export function OverviewPage() {
             )}
             <StatusBadge
               status={connected ? "success" : "error"}
-              label={connected ? "Connected" : "Disconnected"}
+              label={connected ? t("common.connected") : t("common.disconnected")}
             />
           </div>
         }

@@ -1,9 +1,11 @@
-import { Moon, Sun, PanelLeftClose, PanelLeftOpen, Menu, LogOut } from "lucide-react";
+import { Moon, Sun, PanelLeftClose, PanelLeftOpen, Menu, LogOut, Languages } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { useUiStore } from "@/stores/use-ui-store";
 import { useAuthStore } from "@/stores/use-auth-store";
 import { useIsMobile } from "@/hooks/use-media-query";
 
 export function Topbar() {
+  const { t, i18n } = useTranslation();
   const theme = useUiStore((s) => s.theme);
   const setTheme = useUiStore((s) => s.setTheme);
   const sidebarCollapsed = useUiStore((s) => s.sidebarCollapsed);
@@ -19,13 +21,17 @@ export function Topbar() {
     ? () => setMobileSidebarOpen(true)
     : toggleSidebar;
 
+  const toggleLanguage = () => {
+    i18n.changeLanguage(i18n.language === "zh" ? "en" : "zh");
+  };
+
   return (
     <header className="flex h-14 items-center justify-between border-b bg-background px-4">
       <div className="flex items-center gap-2">
         <button
           onClick={handleSidebarToggle}
           className="cursor-pointer rounded-md p-2 text-muted-foreground hover:bg-accent hover:text-accent-foreground"
-          title={isMobile ? "Open menu" : sidebarCollapsed ? "Expand sidebar" : "Collapse sidebar"}
+          title={isMobile ? t("topbar.expandSidebar") : sidebarCollapsed ? t("topbar.expandSidebar") : t("topbar.collapseSidebar")}
         >
           {isMobile ? (
             <Menu className="h-4 w-4" />
@@ -43,9 +49,17 @@ export function Topbar() {
         )}
 
         <button
+          onClick={toggleLanguage}
+          className="cursor-pointer rounded-md p-2 text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+          title={t("topbar.language")}
+        >
+          <Languages className="h-4 w-4" />
+        </button>
+
+        <button
           onClick={() => setTheme(isDark ? "light" : "dark")}
           className="cursor-pointer rounded-md p-2 text-muted-foreground hover:bg-accent hover:text-accent-foreground"
-          title="Toggle theme"
+          title={t("topbar.toggleTheme")}
         >
           {isDark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
         </button>
@@ -53,7 +67,7 @@ export function Topbar() {
         <button
           onClick={logout}
           className="cursor-pointer rounded-md p-2 text-muted-foreground hover:bg-accent hover:text-accent-foreground"
-          title="Logout"
+          title={t("topbar.logout")}
         >
           <LogOut className="h-4 w-4" />
         </button>

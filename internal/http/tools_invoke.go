@@ -5,7 +5,9 @@ import (
 	"fmt"
 	"log/slog"
 	"net/http"
+	"path/filepath"
 
+	"github.com/nextlevelbuilder/goclaw/internal/config"
 	"github.com/nextlevelbuilder/goclaw/internal/store"
 	"github.com/nextlevelbuilder/goclaw/internal/tools"
 )
@@ -94,6 +96,16 @@ func (h *ToolsInvokeHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		ag, err := h.agentStore.GetByKey(ctx, agentIDStr)
 		if err == nil {
 			ctx = store.WithAgentID(ctx, ag.ID)
+			ctx = tools.WithToolAgentKey(ctx, ag.AgentKey)
+			ws := config.ExpandHome(ag.Workspace)
+			if !filepath.IsAbs(ws) {
+				if abs, absErr := filepath.Abs(ws); absErr == nil {
+					ws = abs
+				}
+			}
+			if ws != "" {
+				ctx = tools.WithToolWorkspace(ctx, ws)
+			}
 		}
 	}
 

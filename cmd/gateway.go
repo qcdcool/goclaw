@@ -143,6 +143,15 @@ func runGateway() {
 		toolsReg.Register(tools.NewEditTool(workspace, agentCfg.RestrictToWorkspace))
 		toolsReg.Register(tools.NewExecTool(workspace, agentCfg.RestrictToWorkspace))
 	}
+	toolsReg.Register(tools.NewSearchTool(workspace, agentCfg.RestrictToWorkspace))
+	toolsReg.Register(tools.NewGlobTool(workspace, agentCfg.RestrictToWorkspace))
+	toolsReg.Register(tools.NewProcessTool())
+	toolsReg.Register(tools.NewGatewayTool())
+	toolsReg.Register(tools.NewCanvasTool(workspace, agentCfg.RestrictToWorkspace))
+
+	if editTool, ok := toolsReg.Get("edit"); ok {
+		toolsReg.Register(tools.NewAliasTool("edit_file", "Compatibility alias for edit", editTool))
+	}
 
 	// Memory tools — PG-backed; always registered (PG memory is always available)
 	toolsReg.Register(tools.NewMemorySearchTool())
@@ -186,6 +195,9 @@ func runGateway() {
 	// Vision fallback tool (for non-vision providers like MiniMax)
 	toolsReg.Register(tools.NewReadImageTool(providerRegistry))
 	toolsReg.Register(tools.NewCreateImageTool(providerRegistry))
+	if createImageTool, ok := toolsReg.Get("create_image"); ok {
+		toolsReg.Register(tools.NewAliasTool("image", "Compatibility alias for create_image", createImageTool))
+	}
 
 	// TTS (text-to-speech) system
 	ttsMgr := setupTTS(cfg)
@@ -504,6 +516,7 @@ func runGateway() {
 	toolsReg.Register(tools.NewSessionStatusTool())
 	toolsReg.Register(tools.NewSessionsHistoryTool())
 	toolsReg.Register(tools.NewSessionsSendTool())
+	toolsReg.Register(tools.NewSessionsSpawnTool())
 
 	// Message tool (send to channels)
 	toolsReg.Register(tools.NewMessageTool())
@@ -529,7 +542,7 @@ func runGateway() {
 	hasMemory := true
 
 	// Wire SessionStoreAware + BusAware on tools that need them
-	for _, name := range []string{"sessions_list", "session_status", "sessions_history", "sessions_send"} {
+	for _, name := range []string{"sessions_list", "session_status", "sessions_history", "sessions_send", "sessions_spawn"} {
 		if t, ok := toolsReg.Get(name); ok {
 			if sa, ok := t.(tools.SessionStoreAware); ok {
 				sa.SetSessionStore(pgStores.Sessions)

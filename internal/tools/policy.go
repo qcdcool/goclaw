@@ -12,22 +12,25 @@ import (
 var toolGroups = map[string][]string{
 	"memory":     {"memory_search", "memory_get"},
 	"web":        {"web_search", "web_fetch"},
-	"fs":         {"read_file", "write_file", "list_files", "edit"},
-	"runtime":    {"exec"},
-	"sessions":   {"sessions_list", "sessions_history", "sessions_send", "spawn", "session_status"},
-	"ui":         {"browser"},
-	"automation": {"cron"},
+	"fs":         {"read_file", "write_file", "list_files", "edit", "edit_file", "search", "glob"},
+	"runtime":    {"exec", "process"},
+	"sessions":   {"sessions_list", "sessions_history", "sessions_send", "spawn", "sessions_spawn", "subagent", "subagents", "session_status"},
+	"ui":         {"browser", "canvas"},
+	"automation": {"cron", "gateway"},
 	"messaging":  {"message", "create_forum_topic"},
+	"nodes":      {"nodes"},
 	"delegation": {"handoff", "delegate_search", "evaluate_loop"},
 	"team":       {"team_tasks", "team_message"},
 	// Composite group: all goclaw native tools (excludes MCP/custom plugins).
 	"goclaw": {
-		"read_file", "write_file", "list_files", "edit", "exec",
-		"web_search", "web_fetch", "browser",
+		"read_file", "write_file", "list_files", "edit", "edit_file", "search", "glob",
+		"exec", "process",
+		"web_search", "web_fetch", "browser", "canvas",
 		"memory_search", "memory_get",
-		"sessions_list", "sessions_history", "sessions_send", "spawn", "session_status",
-		"cron", "message", "create_forum_topic",
+		"sessions_list", "sessions_history", "sessions_send", "spawn", "sessions_spawn", "subagent", "subagents", "session_status",
+		"cron", "gateway", "message", "create_forum_topic",
 		"read_image", "create_image", "skill_search", "tts",
+		"nodes",
 		"handoff", "delegate_search", "evaluate_loop",
 		"team_tasks", "team_message",
 	},
@@ -64,6 +67,7 @@ var toolAliases = map[string]string{
 	"apply-patch":    "apply_patch",
 	"edit_file":      "edit",
 	"sessions_spawn": "spawn",
+	"subagents":   "subagent",
 }
 
 // Subagent deny lists — tools subagents cannot use.

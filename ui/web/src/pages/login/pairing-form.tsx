@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect, useCallback } from "react";
+import { useTranslation } from "react-i18next";
 import { Methods, PROTOCOL_VERSION } from "@/api/protocol";
 import { generateId } from "@/lib/utils";
 
@@ -9,6 +10,7 @@ interface PairingFormProps {
 }
 
 export function PairingForm({ onApproved }: PairingFormProps) {
+  const { t } = useTranslation();
   const [userId, setUserId] = useState("");
   const [code, setCode] = useState<string | null>(null);
   const [senderID, setSenderID] = useState<string | null>(null);
@@ -98,11 +100,11 @@ export function PairingForm({ onApproved }: PairingFormProps) {
 
     ws.onclose = () => {
       if (status === "pending") {
-        setError("Connection lost. Please try again.");
+        setError(t("login.connectionLost"));
         setStatus("idle");
         setCode(null);
       } else if (status === "connecting") {
-        setError("Could not connect to gateway.");
+        setError(t("login.couldNotConnect"));
         setStatus("idle");
       }
     };
@@ -135,21 +137,18 @@ export function PairingForm({ onApproved }: PairingFormProps) {
     setStatus("idle");
   }
 
-  // Waiting for admin approval
   if (code && status === "pending") {
     return <PairingCodeDisplay code={code} onCancel={handleCancel} />;
   }
 
-  // Approved
   if (status === "approved") {
     return (
       <p className="text-center text-sm text-green-600">
-        Access approved! Redirecting...
+        {t("login.accessApproved")}
       </p>
     );
   }
 
-  // Request form
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       {error && (
@@ -158,22 +157,21 @@ export function PairingForm({ onApproved }: PairingFormProps) {
 
       <div className="space-y-2">
         <label htmlFor="pairingUserId" className="text-sm font-medium">
-          User ID
+          {t("login.userId")}
         </label>
         <input
           id="pairingUserId"
           type="text"
           value={userId}
           onChange={(e) => setUserId(e.target.value)}
-          placeholder="your-user-id"
+          placeholder={t("login.userIdPlaceholder")}
           className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
           autoFocus
         />
       </div>
 
       <p className="text-xs text-muted-foreground">
-        No token needed. A pairing code will be generated for an admin to
-        approve.
+        {t("login.noPairingNote")}
       </p>
 
       <button
@@ -181,7 +179,7 @@ export function PairingForm({ onApproved }: PairingFormProps) {
         disabled={!userId.trim() || status === "connecting"}
         className="inline-flex h-9 w-full items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow transition-colors hover:bg-primary/90 disabled:pointer-events-none disabled:opacity-50"
       >
-        {status === "connecting" ? "Connecting..." : "Request Access"}
+        {status === "connecting" ? t("login.connecting") : t("login.requestAccess")}
       </button>
     </form>
   );
@@ -194,10 +192,12 @@ function PairingCodeDisplay({
   code: string;
   onCancel: () => void;
 }) {
+  const { t } = useTranslation();
+
   return (
     <div className="space-y-4">
       <p className="text-center text-sm text-muted-foreground">
-        Ask an admin to approve this code:
+        {t("login.askAdminApprove")}
       </p>
 
       <div className="flex justify-center gap-1.5">
@@ -212,7 +212,7 @@ function PairingCodeDisplay({
       </div>
 
       <p className="text-center text-xs text-muted-foreground">
-        Or run:{" "}
+        {t("login.orRun")}{" "}
         <code className="rounded bg-muted px-1.5 py-0.5">
           goclaw pairing approve {code}
         </code>
@@ -220,7 +220,7 @@ function PairingCodeDisplay({
 
       <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
         <span className="inline-block h-2 w-2 animate-pulse rounded-full bg-amber-500" />
-        Waiting for approval...
+        {t("login.waitingForApproval")}
       </div>
 
       <button
@@ -228,7 +228,7 @@ function PairingCodeDisplay({
         onClick={onCancel}
         className="inline-flex h-9 w-full items-center justify-center rounded-md border px-4 py-2 text-sm font-medium transition-colors hover:bg-accent"
       >
-        Cancel
+        {t("common.cancel")}
       </button>
     </div>
   );

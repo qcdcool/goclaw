@@ -1,5 +1,6 @@
 import { useEffect, useRef } from "react";
 import { Terminal, Play, Square, Trash2 } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { PageHeader } from "@/components/shared/page-header";
@@ -13,6 +14,7 @@ const levelColors: Record<string, string> = {
 };
 
 export function LogsPage() {
+  const { t } = useTranslation();
   const { logs, tailing, error, startTail, stopTail, clearLogs } = useLogs();
   const scrollRef = useRef<HTMLDivElement>(null);
 
@@ -25,18 +27,18 @@ export function LogsPage() {
   return (
     <div className="flex h-full flex-col p-6">
       <PageHeader
-        title="Logs"
-        description="Live log tailing"
+        title={t("logs.title")}
+        description={t("logs.description")}
         actions={
           <div className="flex items-center gap-2">
-            {tailing && <Badge variant="success">Live</Badge>}
+            {tailing && <Badge variant="success">{t("common.live")}</Badge>}
             {tailing ? (
               <Button variant="outline" size="sm" onClick={stopTail} className="gap-1">
-                <Square className="h-3.5 w-3.5" /> Stop
+                <Square className="h-3.5 w-3.5" /> {t("logs.stop")}
               </Button>
             ) : (
               <Button size="sm" onClick={startTail} className="gap-1">
-                <Play className="h-3.5 w-3.5" /> Start Tail
+                <Play className="h-3.5 w-3.5" /> {t("logs.startTail")}
               </Button>
             )}
             <Button
@@ -46,7 +48,7 @@ export function LogsPage() {
               disabled={logs.length === 0}
               className="gap-1"
             >
-              <Trash2 className="h-3.5 w-3.5" /> Clear
+              <Trash2 className="h-3.5 w-3.5" /> {t("logs.clear")}
             </Button>
           </div>
         }
@@ -62,7 +64,7 @@ export function LogsPage() {
               <Terminal className="mx-auto mb-2 h-8 w-8" />
               <p className="text-yellow-500">{error}</p>
               <p className="mt-1 text-zinc-600">
-                This feature is not yet implemented on the Go backend.
+                {t("logs.notImplemented")}
               </p>
             </div>
           </div>
@@ -72,8 +74,8 @@ export function LogsPage() {
               <Terminal className="mx-auto mb-2 h-8 w-8" />
               <p>
                 {tailing
-                  ? "Waiting for logs..."
-                  : "Click \"Start Tail\" to begin streaming logs."}
+                  ? t("logs.waitingForLogs")
+                  : t("logs.clickStartTail")}
               </p>
             </div>
           </div>

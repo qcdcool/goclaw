@@ -18,11 +18,15 @@ func builtinToolSeedData() []store.BuiltinToolDef {
 		{Name: "write_file", DisplayName: "Write File", Description: "Write or create files in the workspace", Category: "filesystem", Enabled: true},
 		{Name: "list_files", DisplayName: "List Files", Description: "List files and directories in the workspace", Category: "filesystem", Enabled: true},
 		{Name: "edit", DisplayName: "Edit File", Description: "Apply targeted edits to files (search and replace)", Category: "filesystem", Enabled: true},
+		{Name: "edit_file", DisplayName: "Edit File (Compat)", Description: "Compatibility alias for edit", Category: "filesystem", Enabled: true},
+		{Name: "search", DisplayName: "Search", Description: "Search file contents by text pattern", Category: "filesystem", Enabled: true},
+		{Name: "glob", DisplayName: "Glob", Description: "Find files by glob pattern", Category: "filesystem", Enabled: true},
 
 		// runtime
 		{Name: "exec", DisplayName: "Execute Command", Description: "Execute shell commands in the workspace", Category: "runtime", Enabled: true,
 			Metadata: json.RawMessage(`{"config_hint":"Config → Tools → Exec Approval"}`),
 		},
+		{Name: "process", DisplayName: "Process", Description: "List, inspect, and signal running processes", Category: "runtime", Enabled: true},
 
 		// web
 		{Name: "web_search", DisplayName: "Web Search", Description: "Search the web using Brave or DuckDuckGo", Category: "web", Enabled: true,
@@ -47,6 +51,7 @@ func builtinToolSeedData() []store.BuiltinToolDef {
 			Settings: json.RawMessage(`{"provider":"openrouter","model":"google/gemini-2.5-flash-image"}`),
 			Requires: []string{"image_gen_provider"},
 		},
+		{Name: "image", DisplayName: "Image (Compat)", Description: "Compatibility alias for create_image", Category: "media", Enabled: true},
 		{Name: "tts", DisplayName: "Text to Speech", Description: "Convert text to speech audio", Category: "media", Enabled: true,
 			Requires: []string{"tts_provider"},
 			Metadata: json.RawMessage(`{"config_hint":"Config → TTS"}`),
@@ -57,12 +62,14 @@ func builtinToolSeedData() []store.BuiltinToolDef {
 			Requires: []string{"browser"},
 			Metadata: json.RawMessage(`{"config_hint":"Config → Tools → Browser"}`),
 		},
+		{Name: "canvas", DisplayName: "Canvas", Description: "Create Mermaid diagram canvas markdown files", Category: "browser", Enabled: true},
 
 		// sessions
 		{Name: "sessions_list", DisplayName: "List Sessions", Description: "List active chat sessions", Category: "sessions", Enabled: true},
 		{Name: "session_status", DisplayName: "Session Status", Description: "Get status of a chat session", Category: "sessions", Enabled: true},
 		{Name: "sessions_history", DisplayName: "Session History", Description: "Get message history of a chat session", Category: "sessions", Enabled: true},
 		{Name: "sessions_send", DisplayName: "Send to Session", Description: "Send a message to a chat session", Category: "sessions", Enabled: true},
+		{Name: "sessions_spawn", DisplayName: "Spawn Session", Description: "Create a new session and optionally send an initial message", Category: "sessions", Enabled: true},
 
 		// messaging
 		{Name: "message", DisplayName: "Message", Description: "Send messages to connected channels (Telegram, Discord, etc.)", Category: "messaging", Enabled: true},
@@ -71,11 +78,13 @@ func builtinToolSeedData() []store.BuiltinToolDef {
 		{Name: "cron", DisplayName: "Cron Scheduler", Description: "Schedule recurring tasks with cron expressions", Category: "scheduling", Enabled: true,
 			Metadata: json.RawMessage(`{"config_hint":"Config → Cron"}`),
 		},
+		{Name: "gateway", DisplayName: "Gateway", Description: "Gateway status and health helpers", Category: "scheduling", Enabled: true},
 
 		// subagents & delegation (unified spawn tool)
 		{Name: "spawn", DisplayName: "Spawn / Delegate", Description: "Spawn a subagent or delegate to another agent", Category: "subagents", Enabled: true,
 			Metadata: json.RawMessage(`{"config_hint":"Config → Agents Defaults"}`),
 		},
+		{Name: "subagents", DisplayName: "Subagents (Compat)", Description: "Compatibility alias for subagent", Category: "subagents", Enabled: true},
 
 		// skills
 		{Name: "skill_search", DisplayName: "Skill Search", Description: "Search available skills by keyword or description", Category: "skills", Enabled: true},

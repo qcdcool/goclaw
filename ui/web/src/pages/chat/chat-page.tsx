@@ -1,6 +1,7 @@
 import { useState, useCallback, useEffect, useRef } from "react";
 import { useParams, useNavigate } from "react-router";
 import { Eye, PanelLeftOpen } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { useAuthStore } from "@/stores/use-auth-store";
 import { useIsMobile } from "@/hooks/use-media-query";
 import { cn } from "@/lib/utils";
@@ -13,6 +14,7 @@ import { useChatSend } from "./hooks/use-chat-send";
 import { isOwnSession } from "@/lib/session-key";
 
 export function ChatPage() {
+  const { t } = useTranslation();
   const { sessionKey: urlSessionKey } = useParams<{ sessionKey: string }>();
   const navigate = useNavigate();
   const connected = useAuthStore((s) => s.connected);
@@ -39,14 +41,12 @@ export function ChatPage() {
     addLocalMessage,
   } = useChatMessages(sessionKey, agentId);
 
-  // Sync URL param to state
   useEffect(() => {
     if (urlSessionKey && urlSessionKey !== sessionKey) {
       setSessionKey(urlSessionKey);
     }
   }, [urlSessionKey, sessionKey]);
 
-  // Refresh sessions when run completes
   const prevIsRunningRef = useRef(false);
   useEffect(() => {
     if (prevIsRunningRef.current && !isRunning) {
@@ -102,7 +102,6 @@ export function ChatPage() {
         setSessionKey(key);
         navigate(`/chat/${encodeURIComponent(key)}`);
       }
-      // Pass key directly so send() doesn't use a stale closure value
       send(message, key);
     },
     [sessionKey, send, buildNewSessionKey, navigate],
@@ -168,7 +167,6 @@ export function ChatPage() {
         />
       )}
 
-      {/* Main chat area */}
       <div className="flex flex-1 flex-col">
         {isMobile && (
           <div className="flex items-center border-b px-3 py-2">
@@ -207,7 +205,7 @@ export function ChatPage() {
         ) : (
           <div className="flex items-center gap-2 border-t bg-muted/50 px-4 py-3 text-sm text-muted-foreground">
             <Eye className="h-4 w-4" />
-            Read-only — this session belongs to another user
+            {t("chat.readOnly")}
           </div>
         )}
       </div>
